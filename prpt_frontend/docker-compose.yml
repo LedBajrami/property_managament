@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  prpt-frontend:
+    container_name: prpt-frontend
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - "5173:5173"  # Vite dev server default port
+      - "4173:4173"  # Vite preview server port
+    environment:
+      - NODE_ENV=development
+      - VITE_HOST=0.0.0.0  # Allow external connections
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

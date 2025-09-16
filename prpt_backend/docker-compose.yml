@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile
+            args:
+                user: prpt_backend_susr
+                uid: 1002
+        container_name: prpt_backend_app
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www
+            - ./docker/php/php.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./storage/app:/var/www/storage/app
+        networks:
+            - app-network
+        depends_on:
+            postgres:
+                condition: service_healthy
+
+    nginx:
+        image: nginx:1.21.6-alpine
+        container_name: prpt_backend_nginx
+        restart: unless-stopped
+        ports:
+            - "8090:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx:/etc/nginx/conf.d
+        networks:
+            - app-network
+        depends_on:
+            - app
+
+    postgres:
+        image: postgres:17
+        container_name: prpt_backend_pg
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: prpt_backend
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        ports:
+            - "5432:5432"
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+        networks:
+            - app-network
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d prpt_backend"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    redis:
+        image: redis:alpine
+        container_name: prpt_backend_redis
+        restart: unless-stopped
+        ports:
+            - '6379:6379'
+        networks:
+            - app-network
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 3s
+            retries: 3
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.2'
+                    memory: 128M
+
+volumes:
+    pg-data:
+        driver: local
+
+networks:
+    app-network:
+        driver: bridge

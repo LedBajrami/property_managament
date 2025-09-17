@@ -37,6 +37,8 @@ const getUserState = () => get(url.USER_STATE);
 // //Main Permissions
 // const getMainPermissions = (filters) => get(url.GET_MAIN_PERMISSIONS, filters);
 
+const registerCompany = (data: any) => post(`/register-company`, data);
+
 
 
 
@@ -68,4 +70,6 @@ export {
     //
     // //Main Permissions
     // getMainPermissions,
+
+    registerCompany,
 }

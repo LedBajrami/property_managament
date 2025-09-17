@@ -26,6 +26,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useMutation } from '@tanstack/react-query';
+import {post} from "@/library/http/apiHelpers.ts";
+import {useNavigate} from "react-router-dom";
+
 
 export function NavUser({
   user,
@@ -37,6 +41,20 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
+
+    const logoutMutation = useMutation({
+        mutationFn: () => post('/logout'),
+        onSuccess: () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            navigate('/login');
+        },
+        onError: (error) => {
+            console.error('Logout failed:', error);
+        }
+    });
 
   return (
     <SidebarMenu>
@@ -96,9 +114,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
-              Log out
+            <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
+                <IconLogout />
+                {logoutMutation.isPending ? 'Logging out...' : 'Log out'}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 
 import Dashboard from '@/pages/Dashboard/Dashborad.tsx';
+import RegisterCompany from "@/pages/Company/RegisterCompany/RegisterCompanyForm.tsx";
 // import AdminPage from '../pages/Admin';
 // import UserPage from '../pages/User';
 
@@ -61,6 +62,16 @@ export const router = createBrowserRouter([
             {
                 path: '*',
                 element: <div>404 - Page Not Found</div>,
+            },
+
+            // Company
+            {
+                path: '/register-company',
+                element: (
+                    <PublicRoute>
+                        <RegisterCompany />
+                    </PublicRoute>
+                ),
             },
         ],
     },

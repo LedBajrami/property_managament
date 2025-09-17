@@ -15,7 +15,7 @@ axiosApi.defaults.headers["Access-Control-Allow-Origin"] = "*";
 
 // Request Interceptor
 axiosApi.interceptors.request.use(
-    async (config: AxiosRequestConfig) => {
+    async (config: any) => {
         const token = await authHeader();
         if (token) {
             config.headers = {
@@ -38,57 +38,82 @@ axiosApi.interceptors.request.use(
 axiosApi.interceptors.response.use(
     (response: AxiosResponse) => {
         if (response.status >= 200 && response.status <= 299) {
+            const method = response.config.method?.toUpperCase();
+            const successMessage = response.data?.message;
+
+            if (successMessage) {
+                toast.success("Success", {
+                    description: successMessage,
+                });
+            } else {
+                switch (method) {
+                    case 'POST':
+                        toast.success("Created Successfully");
+                        break;
+                    case 'PUT':
+                    case 'PATCH':
+                        toast.success("Updated Successfully");
+                        break;
+                    case 'DELETE':
+                        toast.success("Deleted Successfully");
+                        break;
+                    default:
+                        if (method !== 'GET') {
+                            toast.success("Request Successful");
+                        }
+                }
+            }
+
             return response;
         }
         throw response;
     },
     (error) => {
         if (!error.response) {
+            toast.error("Network Error", {
+                description: "Please check your internet connection",
+            });
             return Promise.reject(error);
         }
 
-        let message: string | unknown;
+        const { status, data, config } = error.response;
 
-        if (error.response && error.response.status) {
-            if (error.response.status === 401) {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-                toast.error("Invalid Credentials", {
-                    description: "Please try again",
-                });
-                // TODO: implement refresh token
-            }
+        if (status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            toast.error("Invalid Credentials", {
+                description: "Please try again",
+            });
+            // TODO: implement refresh token
+        } else if (status === 404) {
+            toast.error(`Request Error: ${config.url}`, {
+                description: "Sorry! the page you are looking for could not be found",
+            });
+        } else if (status === 500) {
+            const errorMessage = data?.message || "Internal Server Error";
+            const errorTitle = data?.message ? errorMessage : `Request Error: ${config.url}`;
+            const errorDescription = data?.message
+                ? "Please try again or contact support if the problem persists"
+                : "Sorry! something went wrong, please contact our support team";
 
-            switch (error.response.status) {
-                case 404:
-                    message = "Sorry! the page you are looking for could not be found";
-                    toast.error(`Request Error: ${error.response.config.url}`, {
-                        description: message,
-                    });
-                    break;
-
-                case 500:
-                    message = "Sorry! something went wrong, please contact our support team";
-                    toast.error(
-                        error.response.data?.message
-                            ? `${error.response.data.message}`
-                            : `Request Error: ${error.response.config.url}`,
-                        {
-                            description: error.response.data?.message ? "" : message,
-                        }
-                    );
-                    break;
-
-                default:
-                    message = error.response.data;
-                    break;
-            }
+            toast.error(errorTitle, {
+                description: errorDescription,
+            });
+        } else if (status >= 400 && status < 500) {
+            const errorMessage = data?.message || data?.error || "Bad Request";
+            toast.error("Request Failed", {
+                description: errorMessage,
+            });
+        } else {
+            const errorMessage = data?.message || "An unexpected error occurred";
+            toast.error("Error", {
+                description: errorMessage,
+            });
         }
 
-        throw message;
+        return Promise.reject(error);
     }
 );
-
 // ✅ API utility functions
 
 export async function get<T = any>(

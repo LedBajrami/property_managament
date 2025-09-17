@@ -1,5 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { LoaderPinwheel } from "lucide-react"
+
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -10,9 +12,15 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const { user, isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <LoaderPinwheel
+            className="animate-spin"
+            style={{
+                position: "absolute",
+                top: '50%',
+                right: '50%',
+            }}
+        />
     }
-
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }

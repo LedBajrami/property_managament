@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { type FormEvent } from "react"
+import {Link} from "react-router";
 
 interface LoginData {
     email: string;
@@ -84,16 +85,12 @@ export function LoginForm( { className, onSubmit, isLoading = false, ...props}: 
                                 >
                                     {isLoading ? "Logging in..." : "Login"}
                                 </Button>
-                                <Button variant="outline" className="w-full" disabled={isLoading}>
-                                    Login with Google
-                                </Button>
                             </div>
                         </div>
                         <div className="mt-4 text-center text-sm">
-                            Don&apos;t have an account?{" "}
-                            <a href="#" className="underline underline-offset-4">
-                                Sign up
-                            </a>
+                            <Link to="/register-company" className="underline underline-offset-4">
+                                Register your company
+                            </Link>
                         </div>
                     </form>
                 </CardContent>

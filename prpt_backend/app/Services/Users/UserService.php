@@ -4,6 +4,7 @@ namespace App\Services\Users;
 
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
+use App\Notifications\ChangeUserPasswordNotification;
 use App\Traits\ApiTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -41,7 +42,7 @@ class UserService implements UserServiceInterface
 
             $user = User::create($data);
             $user->assignRole($role);
-//            $user->changePasswordNotification();
+            $user->notify(new ChangeUserPasswordNotification());
 
             return $this->success(new UserResource($user), 'User created successfully');
         } catch (\Throwable $th) {

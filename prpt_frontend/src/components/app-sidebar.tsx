@@ -1,20 +1,11 @@
 import * as React from "react"
 import {
   IconCamera,
-  IconChartBar,
   IconDashboard,
-  IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
   IconSettings,
-  IconUsers,
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -30,7 +21,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {useAuth} from "@/hooks/useAuth.ts";
+import {useAuth} from "@/hooks/Auth/useAuth.ts";
+import {Building2, CreditCard, FileChartColumn, FileText, FolderKanban, Users} from "lucide-react";
+import {Link} from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
@@ -44,28 +37,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         navMain: [
             {
                 title: "Dashboard",
-                url: "#",
+                url: "/dashboard",
                 icon: IconDashboard,
             },
             {
-                title: "Lifecycle",
-                url: "#",
-                icon: IconListDetails,
+                title: "Properties",
+                url: "/properties/",
+                icon: Building2,
             },
             {
-                title: "Analytics",
-                url: "#",
-                icon: IconChartBar,
+                title: "Residents",
+                url: "/residents",
+                icon: Users,
             },
             {
-                title: "Projects",
-                url: "#",
-                icon: IconFolder,
+                title: "Payments",
+                url: "/payments",
+                icon: CreditCard,
             },
             {
                 title: "Team",
-                url: "#",
-                icon: IconUsers,
+                url: "/team",
+                icon: FolderKanban,
             },
         ],
         navClouds: [
@@ -119,35 +112,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         navSecondary: [
             {
                 title: "Settings",
-                url: "#",
+                url: "/settings",
                 icon: IconSettings,
-            },
-            {
-                title: "Get Help",
-                url: "#",
-                icon: IconHelp,
-            },
-            {
-                title: "Search",
-                url: "#",
-                icon: IconSearch,
             },
         ],
         documents: [
             {
-                name: "Data Library",
-                url: "#",
-                icon: IconDatabase,
+                name: "Documents",
+                url: "/documents",
+                icon: FileText,
             },
             {
                 name: "Reports",
-                url: "#",
-                icon: IconReport,
-            },
-            {
-                name: "Word Assistant",
-                url: "#",
-                icon: IconFileWord,
+                url: "/reports",
+                icon: FileChartColumn,
             },
         ],
     }
@@ -162,10 +140,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link to="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getUserState } from '../library/http/backendHelpers.ts';
+import { getUserState } from '../../library/http/backendHelpers.ts';
 
 interface AuthResponse {
     user: {

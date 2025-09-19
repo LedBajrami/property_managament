@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('leases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreignId('resident_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreignId('unit_id')->constrained()->onDelete('restrict');
             $table->date('start_date');
             $table->date('end_date');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'expired', 'terminated'])->default('active');
             $table->timestamps();
 
-            $table->index(['tenant_id', 'status']);
+            $table->index(['resident_id', 'status']);
             $table->index(['unit_id', 'status']);
             $table->index(['start_date', 'end_date']);
         });

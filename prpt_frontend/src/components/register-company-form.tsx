@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { type FormEvent } from "react"
 import {Link} from "react-router";
 
-interface RegisterData {
+interface RegisterCompanyData {
     name: string;
     email: string;
     address: string;
@@ -24,7 +24,7 @@ interface RegisterData {
 }
 
 interface RegisterCompanyFormProps extends Omit<React.ComponentProps<"div">, "onSubmit"> {
-    onSubmit: (data: RegisterData) => void;
+    onSubmit: (data: RegisterCompanyData) => void;
     isLoading?: boolean;
     isSuccess?: boolean;
 }
@@ -35,7 +35,7 @@ export function RegisterCompanyForm( { className, onSubmit, isLoading = false, i
         e.preventDefault();
 
         const formData = new FormData(e.currentTarget);
-        const registerData: RegisterData = {
+        const registerData: RegisterCompanyData = {
             name: formData.get("name") as string,
             email: formData.get("email") as string,
             address: formData.get("address") as string,
@@ -77,6 +77,7 @@ export function RegisterCompanyForm( { className, onSubmit, isLoading = false, i
                                             id="name"
                                             name="name"
                                             type="name"
+                                            placeholder="Acme Inc."
                                             required
                                             disabled={isLoading}
                                         />
@@ -130,6 +131,7 @@ export function RegisterCompanyForm( { className, onSubmit, isLoading = false, i
                                             id="adminName"
                                             name="adminName"
                                             type="adminName"
+                                            placeholder="Admin"
                                             required
                                             disabled={isLoading}
                                         />
@@ -142,6 +144,7 @@ export function RegisterCompanyForm( { className, onSubmit, isLoading = false, i
                                             id="adminLastName"
                                             name="adminLastName"
                                             type="adminLastName"
+                                            placeholder="Example"
                                             required
                                             disabled={isLoading}
                                         />

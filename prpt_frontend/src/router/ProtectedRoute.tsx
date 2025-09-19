@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/Auth/useAuth.ts';
 import { LoaderPinwheel } from "lucide-react"
 
 

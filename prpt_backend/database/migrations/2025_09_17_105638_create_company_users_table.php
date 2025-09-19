@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->enum('role_name', ['owner', 'manager', 'tenant', 'maintenance'])->default('tenant');
+            $table->json('assigned_properties')->nullable(); // only for property-managers
             $table->enum('status', ['active', 'inactive', 'pending'])->default('pending');
             $table->timestamp('invited_at')->nullable();
             $table->timestamp('accepted_at')->nullable();

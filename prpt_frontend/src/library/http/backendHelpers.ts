@@ -7,6 +7,17 @@ interface LoginData {
     password: string;
 }
 
+interface PasswordData {
+    password: string;
+    confirm_password: string;
+}
+
+interface ResetPasswordParams {
+    url: string;
+    data: PasswordData;
+}
+
+
 const loginRequest = (data: LoginData) => post(url.LOGIN, data);
 const getUserState = () => get(url.USER_STATE);
 // const getUserProfile = () => get(url.PROFILE)
@@ -15,7 +26,7 @@ const getUserState = () => get(url.USER_STATE);
 // const getMenuRequest = () => get(url.MENU)
 //
 // const confirmEmail = (id, data) => get(url.CONFIRM_EMAIL + '/' + id, { params: data })
-// const resetPassword = (mainUrl, data) => post(mainUrl, data)
+const resetPassword = ({ url, data }: ResetPasswordParams) => post(url, data);
 //
 //
 // // Users Method
@@ -50,7 +61,7 @@ export {
     // changePassword,
     // getMenuRequest,
     // confirmEmail,
-    // resetPassword,
+    resetPassword,
     //
     // //Users
     // getUsers,

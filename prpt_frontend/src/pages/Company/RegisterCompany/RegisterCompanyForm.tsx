@@ -1,5 +1,5 @@
 import { GalleryVerticalEnd } from "lucide-react";
-import {useRegisterCompany} from "@/hooks/useRegisterCompany.ts";
+import {useRegisterCompany} from "@/hooks/Company/useRegisterCompany.ts";
 import {RegisterCompanyForm} from "@/components/register-company-form.tsx";
 
 interface RegisterData {
@@ -13,10 +13,10 @@ interface RegisterData {
 }
 
 export default function RegisterCompany() {
-    const { mutate: registerCompany, isPending, isSuccess} = useRegisterCompany();
+    const { mutate, isPending, isSuccess} = useRegisterCompany();
 
     const handleRegister = (data: RegisterData) => {
-        registerCompany(data);
+        mutate(data);
     };
 
     return (

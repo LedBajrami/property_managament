@@ -259,10 +259,7 @@ class AuthServices implements AuthServicesInterface
                 'last_log_out' => new \DateTime()
             ]);
             Log::info(trans('messages.logged_out'));
-            return response()->json([
-                'error' => false,
-                'message' => trans('messages.success')
-            ]);
+            return $this->success("", 'Successfully logged out');
         } catch (\Exception $exception) {
             Log::error($exception->getMessage());
             return response()->json([
@@ -348,15 +345,12 @@ class AuthServices implements AuthServicesInterface
                 return $this->error("Invalid signature, please resend confirmation email", 403);
             }
 
-//            $validator = \Validator::make($request->all(), (new RestPasswordRequest())->rules(),
-//                (new RestPasswordRequest())->messages());
-
             $password = $request->get('password');
             $password_confirm = $request->get('password_confirm');
 
-//            if ($password !== $password_confirm) {
-//                return $this->responseToJsonError($validator->errors(), 422);
-//            }
+            if ($password !== $password_confirm) {
+                return $this->responseToJsonError('Passwords do not match!', 422);
+            }
 
             $user = User::find($request->route('id'));
 

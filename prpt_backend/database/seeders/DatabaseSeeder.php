@@ -29,35 +29,28 @@ class DatabaseSeeder extends Seeder
             'edit-properties',
             'view-properties',
             'delete-properties',
-            'manage-property-details',
 
             // Unit Management
             'create-units',
             'edit-units',
             'view-units',
             'delete-units',
-            'manage-unit-availability',
 
-            // Tenant Management
-            'create-tenants',
-            'edit-tenants',
-            'view-tenants',
-            'delete-tenants',
-            'manage-tenant-accounts',
+            // Resident Management
+            'create-residents',
+            'edit-residents',
+            'view-residents',
+            'delete-residents',
 
             // Lease Management
             'create-leases',
             'edit-leases',
             'view-leases',
             'delete-leases',
-            'approve-leases',
-            'terminate-leases',
 
             // Payment Management
             'record-payments',
             'view-payments',
-            'generate-invoices',
-            'manage-payment-methods',
             'view-payment-reports',
 
             // Maintenance Management
@@ -65,35 +58,23 @@ class DatabaseSeeder extends Seeder
             'assign-maintenance-requests',
             'update-maintenance-status',
             'view-maintenance-requests',
-            'approve-maintenance-costs',
 
             // Document Management
             'upload-documents',
             'view-documents',
             'manage-documents',
-            'verify-documents',
 
-            // Communication
-            'send-notices',
-            'view-messages',
-            'send-messages',
+            // Team Management
+            'invite-users',
+            'manage-users',
+            'view-users',
 
-            // Reports & Analytics
-            'view-financial-reports',
-            'view-occupancy-reports',
-            'view-maintenance-reports',
-            'export-reports',
+            // Reports
+            'view-reports',
 
             // Profile Management
             'view-own-profile',
             'edit-own-profile',
-            'view-user-profiles',
-            'manage-user-profiles',
-
-            // System Administration
-            'manage-system-settings',
-            'view-audit-logs',
-            'manage-roles-permissions',
         ];
 
         foreach ($permissions as $permission) {
@@ -103,141 +84,129 @@ class DatabaseSeeder extends Seeder
         // Create roles and assign permissions
         $roles = [
             'super-admin' => [
-                // Full platform access - manages multiple companies
+                // All permissions for platform management
                 'create-properties',
                 'edit-properties',
                 'view-properties',
                 'delete-properties',
-                'manage-property-details',
                 'create-units',
                 'edit-units',
                 'view-units',
                 'delete-units',
-                'manage-unit-availability',
-                'create-tenants',
-                'edit-tenants',
-                'view-tenants',
-                'delete-tenants',
-                'manage-tenant-accounts',
+                'create-residents',
+                'edit-residents',
+                'view-residents',
+                'delete-residents',
                 'create-leases',
                 'edit-leases',
                 'view-leases',
                 'delete-leases',
-                'approve-leases',
-                'terminate-leases',
                 'record-payments',
                 'view-payments',
-                'generate-invoices',
-                'manage-payment-methods',
                 'view-payment-reports',
                 'create-maintenance-requests',
                 'assign-maintenance-requests',
                 'update-maintenance-status',
                 'view-maintenance-requests',
-                'approve-maintenance-costs',
                 'upload-documents',
                 'view-documents',
                 'manage-documents',
-                'verify-documents',
-                'send-notices',
-                'view-messages',
-                'send-messages',
-                'view-financial-reports',
-                'view-occupancy-reports',
-                'view-maintenance-reports',
-                'export-reports',
+                'invite-users',
+                'manage-users',
+                'view-users',
+                'view-reports',
                 'view-own-profile',
                 'edit-own-profile',
-                'view-user-profiles',
-                'manage-user-profiles',
-                'manage-system-settings',
-                'view-audit-logs',
-                'manage-roles-permissions',
             ],
 
             'company-admin' => [
-                // Company-level management - manages own company's properties and tenants
+                // Full company management (can create properties)
                 'create-properties',
                 'edit-properties',
                 'view-properties',
                 'delete-properties',
-                'manage-property-details',
                 'create-units',
                 'edit-units',
                 'view-units',
                 'delete-units',
-                'manage-unit-availability',
-
-                // Tenant and lease management within company
-                'create-tenants',
-                'edit-tenants',
-                'view-tenants',
-                'manage-tenant-accounts',
+                'create-residents',
+                'edit-residents',
+                'view-residents',
+                'delete-residents',
                 'create-leases',
                 'edit-leases',
                 'view-leases',
-                'approve-leases',
-                'terminate-leases',
-
-                // Payment management
+                'delete-leases',
                 'record-payments',
                 'view-payments',
-                'generate-invoices',
-                'manage-payment-methods',
                 'view-payment-reports',
-
-                // Maintenance management
                 'create-maintenance-requests',
                 'assign-maintenance-requests',
                 'update-maintenance-status',
                 'view-maintenance-requests',
-                'approve-maintenance-costs',
-
-                // Documents and communication
                 'upload-documents',
                 'view-documents',
                 'manage-documents',
-                'verify-documents',
-                'send-notices',
-                'view-messages',
-                'send-messages',
-
-                // Company reports
-                'view-financial-reports',
-                'view-occupancy-reports',
-                'view-maintenance-reports',
-                'export-reports',
-
-                // Profile management
+                'invite-users',
+                'manage-users',
+                'view-users',
+                'view-reports',
                 'view-own-profile',
                 'edit-own-profile',
-                'view-user-profiles',
-                'manage-user-profiles',
+            ],
+
+            'property-manager' => [
+                // Property operations (cannot create properties)
+                'edit-properties',
+                'view-properties',
+                'create-units',
+                'edit-units',
+                'view-units',
+                'delete-units',
+                'create-residents',
+                'edit-residents',
+                'view-residents',
+                'delete-residents',
+                'create-leases',
+                'edit-leases',
+                'view-leases',
+                'delete-leases',
+                'record-payments',
+                'view-payments',
+                'view-payment-reports',
+                'create-maintenance-requests',
+                'assign-maintenance-requests',
+                'update-maintenance-status',
+                'view-maintenance-requests',
+                'upload-documents',
+                'view-documents',
+                'manage-documents',
+                'view-reports',
+                'view-own-profile',
+                'edit-own-profile',
+            ],
+
+            'maintenance' => [
+                // Only maintenance-related permissions
+                'view-maintenance-requests',
+                'update-maintenance-status',
+                'upload-documents',
+                'view-documents',
+                'view-own-profile',
+                'edit-own-profile',
             ],
 
             'resident' => [
-                // View own lease and unit information
+                // Resident portal access
                 'view-leases',
                 'view-units',
                 'view-properties',
-
-                // Payment capabilities
                 'view-payments',
                 'record-payments',
-
-                // Maintenance requests
                 'create-maintenance-requests',
                 'view-maintenance-requests',
-
-                // Documents (own documents only)
                 'upload-documents',
                 'view-documents',
-
-                // Communication
-                'view-messages',
-                'send-messages',
-
-                // Own profile only
                 'view-own-profile',
                 'edit-own-profile',
             ],
@@ -248,15 +217,25 @@ class DatabaseSeeder extends Seeder
             $role->givePermissionTo($rolePermissions);
         }
     }
+
     private function createSampleUsers(): void
     {
-        $user = User::create([
+        $superAdminUser = User::create([
             'first_name' => 'Admin',
             'last_name' => 'Example',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
         ]);
 
-        $user->assignRole('super-admin');
+        $superAdminUser->assignRole('super-admin');
+
+        $companyAdminUser = User::create([
+            'first_name' => 'CompanyAdmin',
+            'last_name' => 'Example',
+            'email' => 'cadmin@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $companyAdminUser->assignRole('company-admin');
     }
 }

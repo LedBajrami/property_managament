@@ -4,10 +4,10 @@ import Login from '../pages/Auth/Login';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 
-import Dashboard from '@/pages/Dashboard/Dashborad.tsx';
 import RegisterCompany from "@/pages/Company/RegisterCompany/RegisterCompanyForm.tsx";
-// import AdminPage from '../pages/Admin';
-// import UserPage from '../pages/User';
+import { Dashboard } from "@/pages/Dashboard";
+import TeamPage from "@/pages/Team";
+import SetPassword from "@/pages/Auth/Password/SetPassword.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -27,35 +27,18 @@ export const router = createBrowserRouter([
                 ),
             },
             {
+                path: '/reset-password-email/:id',
+                element: (
+                    <PublicRoute>
+                        <SetPassword />
+                    </PublicRoute>
+                ),
+            },
+            {
                 path: '/dashboard',
                 element: (
                     <ProtectedRoute>
                          <Dashboard />
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: '/admin',
-                element: (
-                    <ProtectedRoute allowedRoles={['admin']}>
-                        <div>Admin Page - Admin Only</div>
-                        {/* <AdminPage /> */}
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: '/manager',
-                element: (
-                    <ProtectedRoute allowedRoles={['admin', 'manager']}>
-                        <div>Manager Page - Admin & Manager Only</div>
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: '/user',
-                element: (
-                    <ProtectedRoute allowedRoles={['admin', 'manager', 'user']}>
-                        <div>User Page - All Roles</div>
                     </ProtectedRoute>
                 ),
             },
@@ -71,6 +54,16 @@ export const router = createBrowserRouter([
                     <PublicRoute>
                         <RegisterCompany />
                     </PublicRoute>
+                ),
+            },
+
+            // Team
+            {
+                path: '/team',
+                element: (
+                    <ProtectedRoute>
+                        <TeamPage />
+                    </ProtectedRoute>
                 ),
             },
         ],

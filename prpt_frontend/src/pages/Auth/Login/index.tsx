@@ -1,6 +1,6 @@
 import { LoginForm } from "@/components/login-form"
 import { GalleryVerticalEnd } from "lucide-react";
-import { useLogin } from "@/hooks/useLogin";
+import { useLogin } from "@/hooks/Auth/useLogin.ts";
 
 interface LoginData {
     email: string;

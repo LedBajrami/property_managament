@@ -6,8 +6,13 @@ export const MENU = '/menu';
 
 export const CONFIRM_EMAIL = "/confirm-email"
 
+// User
+export const GET_USERS = '/users';
+
 // Company
 export const COMPANY = "/company"
+
+
 
 
 

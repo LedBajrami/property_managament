@@ -1,14 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserState } from '../../library/http/backendHelpers.ts';
-
-interface AuthResponse {
-    user: {
-        id: string;
-        first_name: string;
-        email: string;
-        role: string;
-    }
-}
+import {AuthResponse} from "@/types/auth.ts";
 
 export const useAuth = () => {
     const token = localStorage.getItem('token');

@@ -12,7 +12,7 @@ Route::middleware('throttle:forgotPassword')->post('/forgotPassword', [AuthContr
 Route::middleware('throttle:resetPassword')->post('/resetPassword', [AuthController::class, 'resetPassword'])->name('resetPassword');
 Route::middleware('throttle:checkCode')->post('/checkCode', [AuthController::class, 'checkCode'])->name('checkCode');
 Route::get('/confirm-email/{id}', [AuthController::class, 'verify'])->name('confirmemail.verify');
-Route::post('/reset-password-email/{id}', [AuthController::class, 'resetPasswordEmail'])->name('password.temp.reset');
+Route::post('/reset-password-email/{id}', [AuthController::class, 'resetPasswordEmail'])->middleware(['signed'])->name('password.temp.reset');
 // Create Company
 Route::post('/register-company', [CompanyController::class, 'createCompany'])->name('create.company');
 

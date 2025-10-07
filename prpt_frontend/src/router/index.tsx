@@ -3,7 +3,6 @@ import App from '../App';
 import Login from '../pages/Auth/Login';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
-
 import RegisterCompany from "@/pages/Company/RegisterCompany/RegisterCompanyForm.tsx";
 import { Dashboard } from "@/pages/Dashboard";
 import TeamPage from "@/pages/Team";

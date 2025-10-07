@@ -1,21 +1,9 @@
 import {get, post} from "./apiHelpers";
 import * as url from './urlHelpers';
+import {LoginData, ResetPasswordParams} from "@/types/auth.ts";
+import {CreateUserParams} from "@/types/user.ts";
+import {CreateCompany} from "@/types/company.ts";
 
-// Login Method
-interface LoginData {
-    email: string;
-    password: string;
-}
-
-interface PasswordData {
-    password: string;
-    confirm_password: string;
-}
-
-interface ResetPasswordParams {
-    url: string;
-    data: PasswordData;
-}
 
 
 const loginRequest = (data: LoginData) => post(url.LOGIN, data);
@@ -30,9 +18,10 @@ const resetPassword = ({ url, data }: ResetPasswordParams) => post(url, data);
 //
 //
 // // Users Method
-// const getUsers = (filters) => get(url.GET_USERS, filters);
-// const getUser = (user_id) => get(url.GET_USERS + '/' + user_id);
-// const createUser = (user) => post(url.GET_USERS, user);
+const getUsers = () => get(url.GET_USERS);
+// const getUsers = (filters) => get(url.GET_USERS, filters); // use when implementing pagination
+const getUser = (user_id: number) => get(url.GET_USERS + '/' + user_id);
+const createUser = (user: CreateUserParams) => post(url.GET_USERS, user);
 // const editUser = (user, user_id) => put(url.GET_USERS + '/' + user_id, user);
 // const deleteUsers = (user_id) => del(url.GET_USERS + '/' + user_id);
 // const changeUserPassword = (user_id) => post(url.GET_USERS + '/' + user_id + '/change-password');
@@ -48,7 +37,7 @@ const resetPassword = ({ url, data }: ResetPasswordParams) => post(url, data);
 // //Main Permissions
 // const getMainPermissions = (filters) => get(url.GET_MAIN_PERMISSIONS, filters);
 
-const registerCompany = (data: any) => post(`/register-company`, data);
+const registerCompany = (data: CreateCompany) => post(`/register-company`, data);
 
 
 
@@ -64,9 +53,9 @@ export {
     resetPassword,
     //
     // //Users
-    // getUsers,
-    // getUser,
-    // createUser,
+    getUsers,
+    getUser,
+    createUser,
     // editUser,
     // deleteUsers,
     // changeUserPassword,

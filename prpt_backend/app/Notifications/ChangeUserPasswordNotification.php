@@ -6,6 +6,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class ChangeUserPasswordNotification extends Notification
@@ -56,6 +57,7 @@ class ChangeUserPasswordNotification extends Notification
         if (static::$createUrlCallback) {
             return call_user_func(static::$createUrlCallback, $notifiable);
         }
+
         $url  = URL:: temporarySignedRoute(
             'password.temp.reset',
             Carbon::now()->addHours(24),

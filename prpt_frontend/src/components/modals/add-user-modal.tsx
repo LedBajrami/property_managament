@@ -1,64 +1,23 @@
-import { useState } from "react";
+import {type FormEvent} from "react";
 import { FormModal } from "@/components/form-modal.tsx";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import {CreateUserParams} from "@/types/user.ts";
 
-interface AddUserModalProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onSubmit: (userData: UserFormData) => Promise<void>;
-}
-
-interface UserFormData {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    role: string;
-}
-
-export function AddUserModal({ open, onOpenChange, onSubmit }: AddUserModalProps) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState<UserFormData>({
-        first_name: "",
-        last_name: "",
-        email: "",
-        phone: "",
-        role: "",
-    });
-
-    const handleSubmit = async (e: React.FormEvent) => {
+export function AddUserModal({ open, onOpenChange, onSubmit }: any) {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsSubmitting(true);
 
-        try {
-            await onSubmit(formData);
-            // Reset form and close modal on success
-            setFormData({
-                first_name: "",
-                last_name: "",
-                email: "",
-                phone: "",
-                role: "",
-            });
-            onOpenChange(false);
-        } catch (error) {
-            console.error("Error adding user:", error);
-            // Handle error (show toast, etc.)
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+        const formData = new FormData(e.currentTarget);
+        const createUserData: CreateUserParams = {
+            first_name: formData.get("first_name") as string,
+            last_name: formData.get("last_name") as string,
+            email: formData.get("email") as string,
+            phone: formData.get("phone") as string,
+            role: formData.get("role") as string,
+        };
 
-    const handleInputChange = (field: keyof UserFormData, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        onSubmit(createUserData);
     };
 
     return (
@@ -68,7 +27,6 @@ export function AddUserModal({ open, onOpenChange, onSubmit }: AddUserModalProps
             title="Add New User"
             description="Add a new team member to your company."
             onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
             submitText="Add User"
             size="md"
         >
@@ -77,9 +35,8 @@ export function AddUserModal({ open, onOpenChange, onSubmit }: AddUserModalProps
                     <Label htmlFor="first_name">First Name</Label>
                     <Input
                         className="mt-2"
+                        name="first_name"
                         id="first_name"
-                        value={formData.first_name}
-                        onChange={(e) => handleInputChange("first_name", e.target.value)}
                         required
                     />
                 </div>
@@ -87,9 +44,8 @@ export function AddUserModal({ open, onOpenChange, onSubmit }: AddUserModalProps
                     <Label htmlFor="last_name">Last Name</Label>
                     <Input
                         className="mt-2"
+                        name="last_name"
                         id="last_name"
-                        value={formData.last_name}
-                        onChange={(e) => handleInputChange("last_name", e.target.value)}
                         required
                     />
                 </div>
@@ -100,9 +56,8 @@ export function AddUserModal({ open, onOpenChange, onSubmit }: AddUserModalProps
                 <Input
                     className="mt-2"
                     id="email"
+                    name="email"
                     type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
                     required
                 />
             </div>
@@ -112,25 +67,25 @@ export function AddUserModal({ open, onOpenChange, onSubmit }: AddUserModalProps
                 <Input
                     className="mt-2"
                     id="phone"
+                    name="phone"
                     type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     required
                 />
             </div>
 
             <div>
                 <Label htmlFor="role">Role</Label>
-                <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
-                    <SelectTrigger className="mt-2">
-                        <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="property-manager">Property Manager</SelectItem>
-                        <SelectItem value="maintenance">Maintenance</SelectItem>
-                        <SelectItem value="resident">Resident</SelectItem>
-                    </SelectContent>
-                </Select>
+                <select
+                    name="role"
+                    id="role"
+                    className="mt-2 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    required
+                >
+                    <option value="">Select a role</option>
+                    <option value="property-manager">Property Manager</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="resident">Resident</option>
+                </select>
             </div>
         </FormModal>
     );

@@ -341,10 +341,6 @@ class AuthServices implements AuthServicesInterface
     {
         try
         {
-            if (!$request->hasValidSignature()) {
-                return $this->error("Invalid signature, please resend confirmation email", 403);
-            }
-
             $password = $request->get('password');
             $password_confirm = $request->get('password_confirm');
 
@@ -360,7 +356,7 @@ class AuthServices implements AuthServicesInterface
 
             $user->save();
 
-            return $this->responseToJsonSuccess("Password changed successfully please log back in!");
+            return $this->responseToJsonSuccess(" ", "Password changed successfully please log back in!");
         }
         catch (\Exception $th) {
             return $this->error($th->getMessage(), 500, $th);

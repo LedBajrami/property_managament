@@ -2,25 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { loginRequest } from '../../library/http/backendHelpers.ts';
 import { toast } from 'sonner';
-
-interface LoginData {
-    email: string;
-    password: string;
-}
-
-interface LoginResponse {
-    data: {
-        token: {
-            access_token: string;
-        };
-        user: {
-            id: string;
-            name: string;
-            email: string;
-            role: string;
-        };
-    }
-}
+import {LoginData, LoginResponse} from "@/types/auth.ts";
 
 export const useLogin = () => {
     const navigate = useNavigate();

@@ -2,7 +2,6 @@ import {GalleryVerticalEnd} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {Label} from "@/components/ui/label.tsx";
-import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {FormEvent, useState} from "react";
 import {useSetPassword} from "@/hooks/Auth/useSetPassword.ts";

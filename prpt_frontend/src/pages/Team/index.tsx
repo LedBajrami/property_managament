@@ -1,4 +1,3 @@
-// src/pages/team.tsx
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,68 +26,67 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AddUserModal } from "@/components/modals/add-user-modal";
 import AdminLayout from "@/components/layouts/admin-layout.tsx";
+import {useCreateUser} from "@/hooks/User/useCreateUser.ts";
+import {CreateUserParams} from "@/types/user.ts";
+import {useGetUsers} from "@/hooks/User/useGetUsers.ts";
+import {useQueryClient} from "@tanstack/react-query";
 
 // Mock data - replace with your API call
-const mockTeamMembers = [
-    {
-        id: 1,
-        first_name: "John",
-        last_name: "Doe",
-        email: "john@example.com",
-        phone: "+1234567890",
-        role: "property-manager",
-        assigned_properties: [1, 3], // property IDs
-        created_at: "2024-01-15"
-    },
-    {
-        id: 2,
-        first_name: "Jane",
-        last_name: "Smith",
-        email: "jane@example.com",
-        phone: "+1234567891",
-        role: "maintenance",
-        assigned_properties: [],
-        created_at: "2024-02-20"
-    },
-    {
-        id: 3,
-        first_name: "Mike",
-        last_name: "Wilson",
-        email: "mike@example.com",
-        phone: "+1234567892",
-        role: "property-manager",
-        assigned_properties: [2],
-        created_at: "2024-03-10"
-    }
-];
+// const mockTeamMembers = [
+//     {
+//         id: 1,
+//         first_name: "John",
+//         last_name: "Doe",
+//         email: "john@example.com",
+//         phone: "+1234567890",
+//         role: "property-manager",
+//         assigned_properties: [1, 3], // property IDs
+//         created_at: "2024-01-15"
+//     },
+//     {
+//         id: 2,
+//         first_name: "Jane",
+//         last_name: "Smith",
+//         email: "jane@example.com",
+//         phone: "+1234567891",
+//         role: "maintenance",
+//         assigned_properties: [],
+//         created_at: "2024-02-20"
+//     },
+//     {
+//         id: 3,
+//         first_name: "Mike",
+//         last_name: "Wilson",
+//         email: "mike@example.com",
+//         phone: "+1234567892",
+//         role: "property-manager",
+//         assigned_properties: [2],
+//         created_at: "2024-03-10"
+//     }
+// ];
 
-interface TeamMember {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    role: string;
-    assigned_properties: number[];
-    created_at: string;
-}
 
-interface UserFormData {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    role: string;
-}
+// interface TeamMember {
+//     id: number;
+//     first_name: string;
+//     last_name: string;
+//     email: string;
+//     phone: string;
+//     role: string;
+//     assigned_properties: number[];
+//     created_at: string;
+// }
 
 export default function TeamPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
-    const [teamMembers, setTeamMembers] = useState<TeamMember[]>(mockTeamMembers);
+    const { data: teamMembers } = useGetUsers();
+    const { mutate, isPending, isSuccess} = useCreateUser();
+    const queryClient = useQueryClient();
 
     // Filter team members
-    const filteredMembers = teamMembers.filter(member => {
+    const filteredMembers = teamMembers?.data?.filter(member => {
         const matchesSearch =
             member.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             member.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,37 +97,12 @@ export default function TeamPage() {
         return matchesSearch && matchesRole;
     });
 
-    const handleAddUser = async (userData: UserFormData) => {
-        // Your API call here
-        console.log("Adding user:", userData);
 
-        // Mock API response
-        const newMember: TeamMember = {
-            id: Date.now(),
-            ...userData,
-            assigned_properties: [],
-            created_at: new Date().toISOString(),
-        };
-
-        setTeamMembers(prev => [...prev, newMember]);
-
-        // In real app, you'd make API call and refetch data
-        // await createUser(userData);
-        // queryClient.invalidateQueries(['team']);
+    const handleAddUser = (data: CreateUserParams) => {
+        mutate(data);
+        queryClient.invalidateQueries({ queryKey: ['users'] });
     };
 
-    const getRoleBadgeVariant = (role: string) => {
-        switch (role) {
-            case "company-admin":
-                return "default";
-            case "property-manager":
-                return "secondary";
-            case "maintenance":
-                return "outline";
-            default:
-                return "outline";
-        }
-    };
 
     const formatRole = (role: string) => {
         return role.split("-").map(word =>
@@ -192,19 +165,19 @@ export default function TeamPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredMembers.length === 0 ? (
+                            {filteredMembers?.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                                         No team members found
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                filteredMembers.map((member) => (
-                                    <TableRow key={member.id}>
+                                filteredMembers?.map((member) => (
+                                    <TableRow key={member?.id}>
                                         <TableCell>
                                             <div>
                                                 <div className="font-medium">
-                                                    {member.first_name} {member.last_name}
+                                                    {member?.first_name} {member?.last_name}
                                                 </div>
                                             </div>
                                         </TableCell>
@@ -212,23 +185,23 @@ export default function TeamPage() {
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <Mail className="h-3 w-3" />
-                                                    {member.email}
+                                                    {member?.email}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                     <Phone className="h-3 w-3" />
-                                                    {member.phone}
+                                                    {member?.phone}
                                                 </div>
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={getRoleBadgeVariant(member.role)}>
-                                                {formatRole(member.role)}
+                                            <Badge variant='default'>
+                                                {formatRole(member?.role)}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            {member.assigned_properties.length > 0 ? (
+                                            {member?.assigned_properties?.length > 0 ? (
                                                 <div className="flex gap-1">
-                                                    {member.assigned_properties.map(propId => (
+                                                    {member?.assigned_properties.map(propId => (
                                                         <Badge key={propId} variant="outline" className="text-xs">
                                                             Property {propId}
                                                         </Badge>
@@ -239,7 +212,7 @@ export default function TeamPage() {
                                             )}
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
-                                            {new Date(member.created_at).toLocaleDateString()}
+                                            {new Date(member?.created_at).toLocaleDateString()}
                                         </TableCell>
                                         <TableCell>
                                             <DropdownMenu>
@@ -267,6 +240,8 @@ export default function TeamPage() {
                 {/* Add User Modal */}
                 <AddUserModal
                     open={isAddModalOpen}
+                    isPending={isPending}
+                    isSuccess={isSuccess}
                     onOpenChange={setIsAddModalOpen}
                     onSubmit={handleAddUser}
                 />

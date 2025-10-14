@@ -22,18 +22,26 @@ class UserController extends Controller
         return $this->userService->getUsers();
     }
 
+    public function getResidents(Request $request)
+    {
+        return $this->userService->getResidents($request);
+    }
+
+
+    public function getTeamMembers(Request $request)
+    {
+        return $this->userService->getTeamMembers($request);
+    }
     public function getUser(User $user) {
         return $this->userService->getUser($user);
     }
 
     public function createUser(StoreUserRequest $request) {
-        $data = $request->validated();
-        return $this->userService->createUser($data);
+        return $this->userService->createUser($request);
     }
 
-    public function editUser(UpdateUserRequest $request, User $user) {
-        $data = $request->validated();
-        return $this->userService->editUser($user, $data);
+    public function editUser(StoreUserRequest $request, User $user) {
+        return $this->userService->editUser($user, $request);
     }
 
     public function deleteUser(User $user) {

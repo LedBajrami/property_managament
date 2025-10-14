@@ -36,7 +36,7 @@ export function FormModal({
                               description,
                               children,
                               onSubmit,
-                              isSubmitting = false,
+                              isSubmitting,
                               submitText = "Save",
                               cancelText = "Cancel",
                               size = "md",

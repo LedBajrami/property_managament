@@ -21,8 +21,16 @@ export const useLogin = () => {
             // Show success message
             toast.success('Login successful!');
 
-            // Navigate to dashboard
-            navigate('/dashboard');
+            // Handle navigation based on company count
+            if (response.data.user.companies.length > 1) {
+                navigate('/select-company');
+            } else if (response.data.user.companies.length === 1) {
+                localStorage.setItem('current_company_id', response.data.user.companies[0].id.toString());
+                navigate('/dashboard');
+            } else {
+                toast.error('No companies assigned to your account');
+                navigate('/login');
+            }
         },
         onError: (error: any) => {
             toast.error('Login failed', {

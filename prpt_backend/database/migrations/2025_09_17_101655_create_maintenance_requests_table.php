@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('maintenance_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('unit_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('resident_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->foreignId('assigned_to')->nullable()->references('id')->on('users')->onDelete('set null');
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['unit_id', 'status']);
-            $table->index(['tenant_id', 'status']);
+            $table->index(['resident_id', 'status']);
             $table->index('assigned_to');
         });
     }

@@ -26,7 +26,11 @@ import {Building2, CreditCard, FileChartColumn, FileText, FolderKanban, Users} f
 import {Link} from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth();
+    const { user } = useAuth();
+    const current_company_id = localStorage.getItem("current_company_id");
+    const company_name = user?.companies.find((company: any) =>
+        company.id == current_company_id
+    )?.name;
 
     const sidebarData = {
         user: {
@@ -142,7 +146,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link to="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">{company_name}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

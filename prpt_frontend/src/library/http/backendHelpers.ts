@@ -1,12 +1,13 @@
-import {get, post} from "./apiHelpers";
+import {del, get, post, put} from "./apiHelpers";
 import * as url from './urlHelpers';
 import {LoginData, ResetPasswordParams} from "@/types/auth.ts";
-import {CreateUserParams} from "@/types/user.ts";
+import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {CreateCompany} from "@/types/company.ts";
 
 
 
-const loginRequest = (data: LoginData) => post(url.LOGIN, data);
+// @ts-ignore
+const loginRequest = (data: LoginData) => post(url.LOGIN, data, { skipSuccessNotification: true });
 const getUserState = () => get(url.USER_STATE);
 // const getUserProfile = () => get(url.PROFILE)
 // const editUserProfile = (data) => put(url.PROFILE, data)
@@ -19,11 +20,13 @@ const resetPassword = ({ url, data }: ResetPasswordParams) => post(url, data);
 //
 // // Users Method
 const getUsers = () => get(url.GET_USERS);
+const getTeamMembers = () => get(url.GET_TEAM_MEMBERS);
+const getResidents = () => get(url.GET_RESIDENTS);
 // const getUsers = (filters) => get(url.GET_USERS, filters); // use when implementing pagination
-const getUser = (user_id: number) => get(url.GET_USERS + '/' + user_id);
+const getUser = (userId: number) => get(url.GET_USERS + '/' + userId);
 const createUser = (user: CreateUserParams) => post(url.GET_USERS, user);
-// const editUser = (user, user_id) => put(url.GET_USERS + '/' + user_id, user);
-// const deleteUsers = (user_id) => del(url.GET_USERS + '/' + user_id);
+const editUser = (user: UpdateUserParams) => put(url.GET_USERS + '/' + user.id, user);
+const deleteUser = (userId: number) => del(url.GET_USERS + '/' + userId);
 // const changeUserPassword = (user_id) => post(url.GET_USERS + '/' + user_id + '/change-password');
 //
 //
@@ -54,10 +57,12 @@ export {
     //
     // //Users
     getUsers,
+    getTeamMembers,
+    getResidents,
     getUser,
     createUser,
-    // editUser,
-    // deleteUsers,
+    editUser,
+    deleteUser,
     // changeUserPassword,
     //
     //

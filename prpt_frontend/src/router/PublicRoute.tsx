@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/Auth/useAuth.ts';
 
 interface PublicRouteProps {
@@ -6,14 +5,10 @@ interface PublicRouteProps {
 }
 
 const PublicRoute = ({ children }: PublicRouteProps) => {
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isLoading } = useAuth();
 
     if (isLoading) {
         return <div>Loading...</div>;
-    }
-
-    if (isAuthenticated) {
-        return <Navigate to="/dashboard" replace />;
     }
 
     return <>{children}</>;

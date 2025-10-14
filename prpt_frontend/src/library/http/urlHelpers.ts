@@ -8,6 +8,8 @@ export const CONFIRM_EMAIL = "/confirm-email"
 
 // User
 export const GET_USERS = '/users';
+export const GET_TEAM_MEMBERS = '/users/team-members';
+export const GET_RESIDENTS = '/users/residents';
 
 // Company
 export const COMPANY = "/company"

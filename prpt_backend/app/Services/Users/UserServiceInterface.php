@@ -10,11 +10,15 @@ interface UserServiceInterface
 {
   public function getUsers();
 
+    public function getResidents(Request $request);
+
+  public function getTeamMembers(Request $request);
+
   public function getUser($user);
 
-  public function createUser(array $data);
+  public function createUser($request);
 
-  public function editUser($user, array $data);
+  public function editUser($user, $request);
 
   public function deleteUser($user);
 

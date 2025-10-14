@@ -29,6 +29,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import {post} from "@/library/http/apiHelpers.ts";
 import {useNavigate} from "react-router-dom";
+import {ArrowDownUp} from "lucide-react";
 
 
 export function NavUser({
@@ -63,7 +64,7 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user.avatar} alt={user.name} />
@@ -103,6 +104,10 @@ export function NavUser({
               <DropdownMenuItem>
                 <IconUserCircle />
                 Account
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/select-company')}>
+                  <ArrowDownUp />
+                  Switch company
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconCreditCard />

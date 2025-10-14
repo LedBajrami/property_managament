@@ -13,6 +13,7 @@ export interface LoginResponse {
             id: string;
             name: string;
             email: string;
+            companies: Array<any>;
             role: string;
         };
     }
@@ -23,7 +24,9 @@ export interface AuthResponse {
     user: {
         id: string;
         first_name: string;
+        last_name: string;
         email: string;
+        companies: Array<any>;
         role: string;
     }
 }

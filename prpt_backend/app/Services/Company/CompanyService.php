@@ -5,6 +5,7 @@ namespace App\Services\Company;
 use App\Http\Requests\Company\CreateCompanyRequest;
 use App\Http\Resources\Company\CompanyResource;
 use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\User;
 use App\Traits\ApiTrait;
 
@@ -38,6 +39,14 @@ class CompanyService implements CompanyServiceInterface
                 'email' => $data['adminEmail'],
             ];
             $adminUser = User::create($adminData);
+
+            CompanyUser::create([
+                'user_id' => $adminUser->id,
+                'company_id' => $company->id,
+                'role_name' => 'company-admin',
+            ]);
+
+            // $adminUser->notify(new ChangePasswordNotification);
             $adminUser->assignRole('company-admin');
 
             return $this->success(new CompanyResource($company), 'Company created successfully.');

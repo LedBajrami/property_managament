@@ -17,21 +17,22 @@ axiosApi.defaults.headers["Access-Control-Allow-Origin"] = "*";
 axiosApi.interceptors.request.use(
     async (config: any) => {
         const token = await authHeader();
+        const currentCompanyId = localStorage.getItem('current_company_id');
+
         if (token) {
-            config.headers = {
-                ...config.headers,
-                Authorization: token,
-                "Access-Control-Allow-Origin": "*",
-            };
-        } else {
-            config.headers = {
-                ...config.headers,
-                "Access-Control-Allow-Origin": "*",
-            };
+            config.headers.Authorization = token;
         }
+
+        // Always include company ID if available
+        if (currentCompanyId) {
+            config.headers['X-Company-ID'] = currentCompanyId;
+        }
+
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        return Promise.reject(error);
+    }
 );
 
 // Response Interceptor
@@ -41,10 +42,15 @@ axiosApi.interceptors.response.use(
             const method = response.config.method?.toUpperCase();
             const successMessage = response.data?.message;
 
-            if (successMessage) {
-                toast.success("Success", {
-                    description: successMessage,
-                });
+            if (successMessage &&  successMessage !== "SUCCESS") {
+                // @ts-ignore
+                if (response.config.skipSuccessNotification) {
+                    return response;
+                } else {
+                    toast.success("Success", {
+                        description: successMessage,
+                    });
+                }
             } else {
                 switch (method) {
                     case 'POST':

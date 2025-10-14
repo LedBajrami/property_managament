@@ -3,9 +3,12 @@
 namespace App\Services\Users;
 
 use App\Http\Resources\User\UserResource;
+use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\User;
 use App\Notifications\ChangeUserPasswordNotification;
 use App\Traits\ApiTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -26,6 +29,50 @@ class UserService implements UserServiceInterface
         }
     }
 
+    public function getResidents(Request $request)
+    {
+        try {
+            $companyId = $request->header('X-Company-ID');
+
+            $results = User::with('companies')
+                ->whereHas('companies', function ($query) use ($companyId) {
+                    $query
+                        ->where('company_id', $companyId)
+                        ->where('role_name', 'resident');
+                })
+                ->get();
+
+
+            $users = UserResource::collection($results);
+            return $this->success($users);
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+    }
+
+
+    public function getTeamMembers(Request $request)
+    {
+        try {
+            $companyId = $request->header('X-Company-ID');
+
+            $results = User::with('companies')
+                ->whereHas('companies', function ($query) use ($companyId) {
+                    $query
+                        ->where('company_id', $companyId)
+                        ->where('role_name', '!=', 'resident');
+                })
+                ->get();
+
+
+            $users = UserResource::collection($results);
+            return $this->success($users);
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+    }
+
+
     public function getUser($user)
     {
         try {
@@ -35,25 +82,72 @@ class UserService implements UserServiceInterface
         }
     }
 
-    public function createUser(array $data)
+    public function createUser($request)
     {
         try {
+            $data = $request->validated();
+            $company_id = $request->header('X-Company-ID');
             $role = $data['role'] ?? 'resident';
 
+            // Validate company_id exists and user has permission
+            $company = Company::findOrFail($company_id);
+
+            // Check if user exists globally
+            $userExists = User::where('email', $data['email'])->first();
+
+            // If user exists, check if they're already in this company
+            if ($userExists) {
+                $userExistsInCompany = CompanyUser::where('user_id', $userExists->id)
+                    ->where('company_id', $company_id)
+                    ->first();
+
+                if ($userExistsInCompany) {
+                    return $this->error("User already exists in this company");
+                }
+
+                // Add existing user to this company
+                CompanyUser::create([
+                    'user_id' => $userExists->id,
+                    'company_id' => $company_id,
+                    'role_name' => $role,
+                ]);
+
+                return $this->success(
+                    new UserResource($userExists),
+                    'User added to company successfully'
+                );
+            }
+
+            // User doesn't exist globally, create new user
             $user = User::create($data);
+
+            // Add user to company
+            CompanyUser::create([
+                'user_id' => $user->id,
+                'company_id' => $company_id,
+                'role_name' => $role,
+            ]);
+
+            // Assign role
             $user->assignRole($role);
+
+            // Send notification to set password
             $user->notify(new ChangeUserPasswordNotification());
 
-            return $this->success(new UserResource($user), 'User created successfully');
+            return $this->success(
+                new UserResource($user),
+                'User created successfully'
+            );
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
     }
 
-    public function editUser($user, array $data)
+    public function editUser($user, $request)
     {
         try {
-            $role = $data['role'] ?? null;
+            $data = $request->validated();
+            $role = $data['role'] ?? 'resident';
 
             unset($data['role']);
 

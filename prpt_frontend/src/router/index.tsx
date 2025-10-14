@@ -7,6 +7,8 @@ import RegisterCompany from "@/pages/Company/RegisterCompany/RegisterCompanyForm
 import { Dashboard } from "@/pages/Dashboard";
 import TeamPage from "@/pages/Team";
 import SetPassword from "@/pages/Auth/Password/SetPassword.tsx";
+import ResidentsPage from "@/pages/Residents";
+import {SelectCompany} from "@/pages/Company/SelectCompany.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -55,6 +57,14 @@ export const router = createBrowserRouter([
                     </PublicRoute>
                 ),
             },
+            {
+                path: '/select-company',
+                element: (
+                    <ProtectedRoute>
+                        <SelectCompany />
+                    </ProtectedRoute>
+                ),
+            },
 
             // Team
             {
@@ -62,6 +72,16 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <TeamPage />
+                    </ProtectedRoute>
+                ),
+            },
+
+            // Residents
+            {
+                path: '/residents',
+                element: (
+                    <ProtectedRoute>
+                        <ResidentsPage />
                     </ProtectedRoute>
                 ),
             },

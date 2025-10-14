@@ -47,7 +47,7 @@ class AuthServices implements AuthServicesInterface
                 $proxy = Request::create('/oauth/token', 'POST', $params);
                 $proxy->headers->set('Accept', 'application/json');
                 $response = app()->handle($proxy);
-                $credentials = json_decode($response->getContent());
+                $credentials = json_decode($response->getContent(), true);
                 $user = Auth::guard('web')->user();
 //                $user->update([
 //                    'device_token' => $request->request->get('device_token')

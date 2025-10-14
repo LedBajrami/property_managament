@@ -23,6 +23,8 @@ Route::middleware('auth:api')->group(function () {
     // User management
     Route::middleware('throttle:userManagement')->group(function () {
         Route::get('users', [UserController::class, 'getUsers']);
+        Route::get('users/team-members', [UserController::class, 'getTeamMembers']);
+        Route::get('users/residents', [UserController::class, 'getResidents']);
         Route::get('users/{user}', [UserController::class, 'getUser']);
         Route::post('users', [UserController::class, 'createUser']);
         Route::put('users/{user}', [UserController::class, 'editUser']);

@@ -2,14 +2,15 @@ import {type FormEvent} from "react";
 import { FormModal } from "@/components/form-modal.tsx";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {CreateUserParams} from "@/types/user.ts";
+import {UpdateUserParams} from "@/types/user.ts";
 
-export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMember }: any) {
+export function EditUserModal({ open, onOpenChange, onSubmit, isTeamMember, userData }: any) {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const formData = new FormData(e.currentTarget);
-        const createUserData: CreateUserParams = {
+        const editUserData: UpdateUserParams = {
+            id: userData?.id,
             first_name: formData.get("first_name") as string,
             last_name: formData.get("last_name") as string,
             email: formData.get("email") as string,
@@ -17,24 +18,24 @@ export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMe
             role: formData.get("role") as string,
         };
 
-        onSubmit(createUserData);
+        onSubmit(editUserData);
     };
 
     return (
         <FormModal
             open={open}
             onOpenChange={onOpenChange}
-            title="Add New User"
-            description="Add a new member to your company."
+            title="Edit User"
+            description="Edit a member of your company."
             onSubmit={handleSubmit as any}
-            submitText="Add User"
+            submitText="Edit User"
             size="md"
-            isSubmitting={isPending}
         >
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label htmlFor="first_name">First Name</Label>
                     <Input
+                        defaultValue={userData?.first_name}
                         className="mt-2"
                         name="first_name"
                         id="first_name"
@@ -44,6 +45,7 @@ export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMe
                 <div>
                     <Label htmlFor="last_name">Last Name</Label>
                     <Input
+                        defaultValue={userData?.last_name}
                         className="mt-2"
                         name="last_name"
                         id="last_name"
@@ -55,6 +57,7 @@ export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMe
             <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
+                    defaultValue={userData?.email}
                     className="mt-2"
                     id="email"
                     name="email"
@@ -66,6 +69,7 @@ export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMe
             <div>
                 <Label htmlFor="phone">Phone</Label>
                 <Input
+                    defaultValue={userData?.phone}
                     className="mt-2"
                     id="phone"
                     name="phone"
@@ -78,6 +82,7 @@ export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMe
                 <div>
                     <Label htmlFor="role">Role</Label>
                     <select
+                        defaultValue={userData?.role}
                         name="role"
                         id="role"
                         className="mt-2 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"

@@ -3,6 +3,8 @@ import * as url from './urlHelpers';
 import {LoginData, ResetPasswordParams} from "@/types/auth.ts";
 import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {CreateCompany} from "@/types/company.ts";
+import {CreatePropertyParams, UpdatePropertyParams} from "@/types/property.ts";
+import {CreateUnitParams, UpdateUnitParams} from "@/types/unit.ts";
 
 
 
@@ -29,7 +31,36 @@ const editUser = (user: UpdateUserParams) => put(url.GET_USERS + '/' + user.id, 
 const deleteUser = (userId: number) => del(url.GET_USERS + '/' + userId);
 // const changeUserPassword = (user_id) => post(url.GET_USERS + '/' + user_id + '/change-password');
 //
-//
+
+// Properties
+const getProperties = () => get(url.PROPERTY);
+
+const getProperty = (propertyId?: number) => get(`${url.PROPERTY}/${propertyId}`);
+
+const createProperty = (data: CreatePropertyParams) => post(url.PROPERTY, data);
+
+const editProperty = (data: UpdatePropertyParams) => {
+    const { property_id, ...updateData } = data;
+    return put(`${url.PROPERTY}/${property_id}`, updateData);
+};
+
+const deleteProperty = (propertyId: number) => del(`${url.PROPERTY}/${propertyId}`);
+
+
+// Units
+const getUnits = (propertyId?: number) => get(`${url.UNIT}?property_id=${propertyId}`);
+
+const getUnit = (unitId: number) => get(`${url.UNIT}/${unitId}`);
+
+const createUnit = (data: CreateUnitParams) => post(url.UNIT, data);
+
+const editUnit = (data: UpdateUnitParams) => {
+    const { unit_id, ...updateData } = data;
+    return put(`${url.UNIT}/${unit_id}`, updateData);
+};
+
+const deleteUnit = (unitId: number) => del(`${url.UNIT}/${unitId}`);
+
 // //Roles
 // const getRoles = (filters) => get(url.GET_ROLES, filters);
 // const getRole = (role_id) => get(url.GET_ROLES + '/' + role_id);
@@ -77,4 +108,16 @@ export {
     // getMainPermissions,
 
     registerCompany,
+
+    getProperties,
+    getProperty,
+    createProperty,
+    editProperty,
+    deleteProperty,
+
+    getUnits,
+    getUnit,
+    createUnit,
+    editUnit,
+    deleteUnit,
 }

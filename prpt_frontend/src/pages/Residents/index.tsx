@@ -10,13 +10,13 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import {Search, Plus, Mail, Phone, EditIcon, TrashIcon} from "lucide-react";
-import { AddUserModal } from "@/components/modals/add-user-modal";
+import { AddUserModal } from "@/components/modals/User/add-user-modal.tsx";
 import AdminLayout from "@/components/layouts/admin-layout.tsx";
 import {useCreateUser} from "@/hooks/User/useCreateUser.ts";
 import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useGetResidents} from "@/hooks/User/useGetResidents.ts";
-import {EditUserModal} from "@/components/modals/edit-user-modal.tsx";
+import {EditUserModal} from "@/components/modals/User/edit-user-modal.tsx";
 import {useUpdateUser} from "@/hooks/User/useUpdateUser.ts";
 import {useDeleteUser} from "@/hooks/User/useDeleteUser.ts";
 

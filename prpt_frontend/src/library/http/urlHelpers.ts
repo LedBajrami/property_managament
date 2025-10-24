@@ -14,6 +14,11 @@ export const GET_RESIDENTS = '/users/residents';
 // Company
 export const COMPANY = "/company"
 
+// Property
+export const PROPERTY = "/property"
+
+// Unit
+export const UNIT = "/unit"
 
 
 

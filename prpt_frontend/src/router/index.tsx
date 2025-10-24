@@ -9,6 +9,8 @@ import TeamPage from "@/pages/Team";
 import SetPassword from "@/pages/Auth/Password/SetPassword.tsx";
 import ResidentsPage from "@/pages/Residents";
 import {SelectCompany} from "@/pages/Company/SelectCompany.tsx";
+import {Properties} from "@/pages/Properties";
+import {PropertyDetails} from "@/pages/Properties/PropertyDetails";
 
 export const router = createBrowserRouter([
     {
@@ -85,6 +87,26 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+
+            // Properties
+            {
+                path: '/properties',
+                element: (
+                    <ProtectedRoute>
+                        <Properties />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: '/properties/:id',
+                element: (
+                    <ProtectedRoute>
+                        <PropertyDetails />
+                    </ProtectedRoute>
+                )
+            },
+
+
         ],
     },
 ]);

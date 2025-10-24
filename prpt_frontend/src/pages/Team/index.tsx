@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Mail, Phone, EditIcon, TrashIcon } from "lucide-react";
-import { AddUserModal } from "@/components/modals/add-user-modal";
-import { EditUserModal } from "@/components/modals/edit-user-modal";
+import { AddUserModal } from "@/components/modals/User/add-user-modal.tsx";
+import { EditUserModal } from "@/components/modals/User/edit-user-modal.tsx";
 import AdminLayout from "@/components/layouts/admin-layout.tsx";
 import { useCreateUser } from "@/hooks/User/useCreateUser.ts";
 import { useUpdateUser } from "@/hooks/User/useUpdateUser.ts";

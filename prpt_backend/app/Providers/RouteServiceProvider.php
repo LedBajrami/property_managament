@@ -51,13 +51,13 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(250)->by($request->ip());
         });
 
-        //department management
-        RateLimiter::for('departmentManagement', function (Request $request) {
+        //property management
+        RateLimiter::for('propertyManagement', function (Request $request) {
             return Limit::perMinute(250)->by($request->ip());
         });
 
-        //position management
-        RateLimiter::for('positionManagement', function (Request $request) {
+        //unit management
+        RateLimiter::for('unitManagement', function (Request $request) {
             return Limit::perMinute(250)->by($request->ip());
         });
 

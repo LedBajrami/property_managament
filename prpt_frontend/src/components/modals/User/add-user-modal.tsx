@@ -1,7 +1,7 @@
 import {type FormEvent} from "react";
 import { FormModal } from "@/components/form-modal.tsx";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input.tsx";
+import { Label } from "@/components/ui/label.tsx";
 import {CreateUserParams} from "@/types/user.ts";
 
 export function AddUserModal({ open, onOpenChange, onSubmit, isPending, isTeamMember }: any) {

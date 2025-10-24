@@ -1,7 +1,7 @@
 import {type FormEvent} from "react";
 import { FormModal } from "@/components/form-modal.tsx";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input.tsx";
+import { Label } from "@/components/ui/label.tsx";
 import {UpdateUserParams} from "@/types/user.ts";
 
 export function EditUserModal({ open, onOpenChange, onSubmit, isTeamMember, userData }: any) {

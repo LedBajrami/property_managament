@@ -20,6 +20,11 @@ export const PROPERTY = "/property"
 // Unit
 export const UNIT = "/unit"
 
+// Lease
+export const LEASE = "/lease"
+
+
+
 
 
 

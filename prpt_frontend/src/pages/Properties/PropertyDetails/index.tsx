@@ -46,50 +46,25 @@ import {EditUnitModal} from "@/components/modals/Unit/edit-unit-modal.tsx";
 import {useGetUnits} from "@/hooks/Unit/useGetUnits.ts";
 import {useParams} from "react-router";
 import {useGetProperty} from "@/hooks/Property/useGetProperty.ts";
+import {EditPropertyModal} from "@/components/modals/Property/edit-property-modal.tsx";
+import {useUpdateProperty} from "@/hooks/Property/useUpdateProperty.ts";
+import {UpdatePropertyParams} from "@/types/property.ts";
 
 export const PropertyDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditUnitModalOpen, setIsEditUnitModalOpen] = useState(false);
-    // const [isEditPropertyModalOpen, setIsEditPropertyModalOpen] = useState(false);
+    const [isEditPropertyModalOpen, setIsEditPropertyModalOpen] = useState(false);
     const [selectedUnit, setSelectedUnit] = useState<any>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
 
-
-    // Mock data - replace with actual hook: useGetPropertyById(id)
-    // const property = {
-    //     id: 1,
-    //     name: "Sunset Apartments",
-    //     address: "123 Main Street, Downtown",
-    //     property_type: "apartment",
-    //     size: 5000,
-    //     year_built: 2020,
-    //     parking_spaces: 50,
-    //     monthly_bill: 15000,
-    //     description: "Modern apartment complex with premium amenities and excellent location",
-    //     amenities: ["Pool", "Gym", "Security", "Parking", "Elevator"],
-    //     total_units: 24,
-    //     occupied_units: 18,
-    //     available_units: 5,
-    //     maintenance_units: 1,
-    //     occupancy_rate: 75,
-    // };
-
-    // Mock units data - replace with actual hook: useGetUnits(id)
-    // const units = [
-    //     { id: 1, unit_number: "A-101", bedrooms: 2, bathrooms: 1, size_sqm: 85.5, monthly_rent: 1200, status: "occupied" },
-    //     { id: 2, unit_number: "A-102", bedrooms: 2, bathrooms: 2, size_sqm: 95.0, monthly_rent: 1400, status: "available" },
-    //     { id: 3, unit_number: "A-103", bedrooms: 3, bathrooms: 2, size_sqm: 120.0, monthly_rent: 1800, status: "occupied" },
-    //     { id: 4, unit_number: "B-201", bedrooms: 1, bathrooms: 1, size_sqm: 65.0, monthly_rent: 900, status: "maintenance" },
-    //     { id: 5, unit_number: "B-202", bedrooms: 2, bathrooms: 1, size_sqm: 85.5, monthly_rent: 1200, status: "occupied" },
-    // ];
-
     const propertyId = id ? Number(id) : undefined;
+
     const { data: property } = useGetProperty(propertyId);
-    console.log("property", property?.data);
     const { data: units } = useGetUnits(propertyId);
+
     const queryClient = useQueryClient();
 
     const {
@@ -103,6 +78,12 @@ export const PropertyDetails = () => {
         isPending: isUpdating,
         isSuccess: isUpdateSuccess
     } = useUpdateUnit();
+
+    const {
+        mutate: updateProperty,
+        isPending: isUpdatingProperty,
+        isSuccess: isUpdateSuccessProperty
+    } = useUpdateProperty();
 
     const {
         mutate: deleteUnit,
@@ -158,7 +139,7 @@ export const PropertyDetails = () => {
     };
 
     const handleDeleteUnit = (propertyId: number) => {
-        if (confirm("Are you sure you want to delete this property?.data This will also delete all associated units.")) {
+        if (confirm("Are you sure you want to delete this property? This will also delete all associated units.")) {
             deleteUnit(propertyId, {
                 onSuccess: () => {
                     invalidateQueries();
@@ -167,15 +148,19 @@ export const PropertyDetails = () => {
         }
     };
 
+    const handleEditProperty = (data: UpdatePropertyParams) => {
+        updateProperty(data, {
+            onSuccess: () => {
+                invalidateQueries();
+                setIsEditPropertyModalOpen(false);
+            }
+        });
+    };
+
     const openEditUnitModal = (unit: any) => {
         setSelectedUnit(unit);
         setIsEditUnitModalOpen(true);
     };
-
-    // const openEditPropertyModal = (property: any) => {
-    //     setSelectedProperty(property);
-    //     setIsEditPropertyModalOpen(true);
-    // };
 
     const totalUnits = property?.data?.total_units ?? 1; // avoid division by 0
     const occupiedUnits = property?.data?.occupied_units ?? 0;
@@ -205,8 +190,7 @@ export const PropertyDetails = () => {
                             {property?.data.address}
                         </p>
                     </div>
-                    {/*<Button variant="outline" onClick={openEditPropertyModal}>*/}
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => setIsEditPropertyModalOpen(true)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit Property
                     </Button>
@@ -525,7 +509,7 @@ export const PropertyDetails = () => {
                                                     <Button
                                                         variant="outline"
                                                         size="icon"
-                                                        // onClick={() => navigate(`/properties/${property?.id}`)}
+                                                        onClick={() => navigate(`/unit/${unit.id}/leases`)}
                                                         title="View Details & Units"
                                                     >
                                                         <Eye className="h-4 w-4" />
@@ -576,15 +560,15 @@ export const PropertyDetails = () => {
                     unitData={selectedUnit}
                 />
 
-                {/*/!* Edit Unit Modal *!/*/}
-                {/*<EditPropertyModal*/}
-                {/*    open={isEditPropertyModalOpen}*/}
-                {/*    isPending={isUpdating}*/}
-                {/*    isSuccess={isUpdateSuccess}*/}
-                {/*    onOpenChange={setIsEditPropertyModalOpen}*/}
-                {/*    onSubmit={handleEditProperty}*/}
-                {/*    propertyData={selectedProperty}*/}
-                {/*/>*/}
+                {/* Edit Unit Modal */}
+                <EditPropertyModal
+                    open={isEditPropertyModalOpen}
+                    isPending={isUpdatingProperty}
+                    isSuccess={isUpdateSuccessProperty}
+                    onOpenChange={setIsEditPropertyModalOpen}
+                    onSubmit={handleEditProperty}
+                    propertyData={property?.data}
+                />
 
             </div>
         </AdminLayout>

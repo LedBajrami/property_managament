@@ -55,6 +55,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 icon: Users,
             },
             {
+                title: "Leases",
+                url: "/leases",
+                icon: FileText,
+            },
+            {
                 title: "Payments",
                 url: "/payments",
                 icon: CreditCard,

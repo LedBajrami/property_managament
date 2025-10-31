@@ -7,6 +7,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Property\PropertyController;
 use App\Http\Controllers\Unit\UnitController;
+use App\Http\Controllers\Lease\LeaseController;
 
 // auth Login
 Route::middleware('throttle:login')->post('/login', [AuthController ::class, 'login'])->name('login');
@@ -52,5 +53,14 @@ Route::middleware('auth:api')->group(function () {
         Route::post('', [UnitController::class, 'createUnit']);
         Route::put('/{unit}', [UnitController::class, 'editUnit']);
         Route::delete('/{unit}', [UnitController::class, 'deleteUnit']);
+    });
+
+    // Lease management
+    Route::prefix('lease')->middleware('throttle:leaseManagement')->group(function () {
+        Route::get('', [LeaseController::class, 'getLeases']);
+        Route::get('/{lease}', [LeaseController::class, 'getLease']);
+        Route::post('', [LeaseController::class, 'createLease']);
+        Route::put('/{lease}', [LeaseController::class, 'editLease']);
+        Route::delete('/{lease}', [LeaseController::class, 'deleteLease']);
     });
 });

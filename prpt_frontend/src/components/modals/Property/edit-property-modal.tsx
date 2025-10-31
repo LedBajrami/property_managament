@@ -32,8 +32,8 @@ export function EditPropertyModal({ open, onOpenChange, onSubmit, isPending, pro
         <FormModal
             open={open}
             onOpenChange={onOpenChange}
-            title="Edit New Property"
-            description="Edit the property."
+            title=""
+            description=""
             onSubmit={handleFormSubmit as any}
             submitText="Edit Property"
             size="md"

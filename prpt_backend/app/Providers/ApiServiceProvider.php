@@ -6,6 +6,8 @@ use App\Services\Auth\AuthServices;
 use App\Services\Auth\AuthServicesInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
+use App\Services\Lease\LeaseService;
+use App\Services\Lease\LeaseServiceInterface;
 use App\Services\Property\PropertyService;
 use App\Services\Property\PropertyServiceInterface;
 use App\Services\Unit\UnitService;
@@ -26,6 +28,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bind(CompanyServiceInterface::class,CompanyService::class);
         $this->app->bind(PropertyServiceInterface::class,PropertyService::class);
         $this->app->bind(UnitServiceInterface::class,UnitService::class);
+        $this->app->bind(LeaseServiceInterface::class,LeaseService::class);
     }
 
     /**

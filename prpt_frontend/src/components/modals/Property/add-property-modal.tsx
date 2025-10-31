@@ -31,7 +31,7 @@ export function AddPropertyModal({ open, onOpenChange, onSubmit, isPending }: an
             open={open}
             onOpenChange={onOpenChange}
             title="Add New Property"
-            description="Create a new property."
+            description=""
             onSubmit={handleFormSubmit as any}
             submitText="Add Property"
             size="md"

@@ -29,6 +29,7 @@ class UnitService implements UnitServiceInterface
     public function getUnit($unit)
     {
         try {
+            $unit->load('leases');
             return $this->success(new UnitResource($unit));
         } catch (\Throwable $th) {
             return $this->error($th);

@@ -61,8 +61,8 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(250)->by($request->ip());
         });
 
-        //workType management
-        RateLimiter::for('workTypeManagement', function (Request $request) {
+        //lease management
+        RateLimiter::for('leaseManagement', function (Request $request) {
             return Limit::perMinute(250)->by($request->ip());
         });
 

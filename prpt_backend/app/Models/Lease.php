@@ -13,13 +13,23 @@ class Lease extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        'resident_id',
         'unit_id',
         'start_date',
         'end_date',
         'monthly_rent',
         'deposit_amount',
-        'status',
+        'signed_date',
+        'move_in_date',
+        'rent_due_day',
+        'late_fee_amount',
+        'late_fee_grace_days',
+        'least_type',
+        'auto_renew',
+        'utilities_included',
+        'parking_included',
+        'pets_allowed',
+        'special_terms',
     ];
 
     protected $casts = [
@@ -27,11 +37,12 @@ class Lease extends Model
         'end_date' => 'date',
         'monthly_rent' => 'decimal:2',
         'deposit_amount' => 'decimal:2',
+        'utilities_included' => 'array',
     ];
 
-    public function tenant(): BelongsTo
+    public function resident(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'tenant_id');
+        return $this->belongsTo(User::class, 'resident_id');
     }
 
     public function unit(): BelongsTo

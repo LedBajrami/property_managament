@@ -11,6 +11,8 @@ import ResidentsPage from "@/pages/Residents";
 import {SelectCompany} from "@/pages/Company/SelectCompany.tsx";
 import {Properties} from "@/pages/Properties";
 import {PropertyDetails} from "@/pages/Properties/PropertyDetails";
+import {Leases} from "@/pages/Leases";
+import {UnitDetails} from "@/pages/Properties/Units/UnitDetails.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -106,7 +108,25 @@ export const router = createBrowserRouter([
                 )
             },
 
-
+            // Leases
+            // // Specific unit's leases
+            {
+                path: '/unit/:id/leases',
+                element: (
+                    <ProtectedRoute>
+                        <UnitDetails />
+                    </ProtectedRoute>
+                )
+            },
+            // // General Leases Page
+            {
+                path: '/leases',
+                element: (
+                    <ProtectedRoute>
+                        <Leases />
+                    </ProtectedRoute>
+                )
+            },
         ],
     },
 ]);

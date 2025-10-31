@@ -24,7 +24,18 @@ class UnitResource extends JsonResource
                 ];
             }),
             'current_lease' => $this->whenLoaded('leases', function() {
-                return $this->leases()->where('status', 'active')->first();
+                $lease = $this->leases()
+                    ->where('status', 'active')
+                    ->with('resident')
+                    ->first();
+
+                return $lease ? [
+                    'id' => $lease->id,
+                    'start_date' => $lease->start_date,
+                    'end_date' => $lease->end_date,
+                    'monthly_rent' => $lease->monthly_rent,
+                    'resident' => $lease->resident,
+                ] : null;
             }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

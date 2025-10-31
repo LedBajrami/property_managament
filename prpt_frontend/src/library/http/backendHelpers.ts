@@ -5,6 +5,7 @@ import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {CreateCompany} from "@/types/company.ts";
 import {CreatePropertyParams, UpdatePropertyParams} from "@/types/property.ts";
 import {CreateUnitParams, UpdateUnitParams} from "@/types/unit.ts";
+import {CreateLeaseParams, UpdateLeaseParams} from "@/types/lease.ts";
 
 
 
@@ -50,7 +51,7 @@ const deleteProperty = (propertyId: number) => del(`${url.PROPERTY}/${propertyId
 // Units
 const getUnits = (propertyId?: number) => get(`${url.UNIT}?property_id=${propertyId}`);
 
-const getUnit = (unitId: number) => get(`${url.UNIT}/${unitId}`);
+const getUnit = (unitId?: number) => get(`${url.UNIT}/${unitId}`);
 
 const createUnit = (data: CreateUnitParams) => post(url.UNIT, data);
 
@@ -60,6 +61,22 @@ const editUnit = (data: UpdateUnitParams) => {
 };
 
 const deleteUnit = (unitId: number) => del(`${url.UNIT}/${unitId}`);
+
+// Leases
+const getLeases = (unitId?: number) => get(`${url.LEASE}?unit_id=${unitId}`);
+
+const getLease = (leaseId?: number) => get(`${url.LEASE}/${leaseId}`);
+
+const createLease = (data: CreateLeaseParams) => post(url.LEASE, data);
+
+const editLease = (data: UpdateLeaseParams) => {
+    const { lease_id, ...updateData } = data;
+    return put(`${url.LEASE}/${lease_id}`, updateData);
+};
+
+const deleteLease = (unitId: number) => del(`${url.LEASE}/${unitId}`);
+
+const terminateLease = (leaseId?: number) => get(`${url.LEASE}/${leaseId}`);
 
 // //Roles
 // const getRoles = (filters) => get(url.GET_ROLES, filters);
@@ -120,4 +137,11 @@ export {
     createUnit,
     editUnit,
     deleteUnit,
+
+    getLeases,
+    getLease,
+    createLease,
+    editLease,
+    deleteLease,
+    terminateLease
 }

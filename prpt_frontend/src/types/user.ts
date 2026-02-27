@@ -1,6 +1,6 @@
 import {APIResponse} from "@/types/API.ts";
 
-interface User {
+export interface User {
     id: number;
     first_name: string;
     last_name: string;

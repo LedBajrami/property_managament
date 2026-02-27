@@ -5,7 +5,7 @@ import {Property} from "@/types/property.ts";
 
 export const useGetProperty = (propertyId?: number) => {
     return useQuery<APIResponse<Property>>({
-        queryKey: ['property'],
+        queryKey: ['property', propertyId],
         queryFn: () => getProperty(propertyId),
     });
 };

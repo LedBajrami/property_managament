@@ -57,6 +57,7 @@ export function EditLeaseModal({ open, onOpenChange, onSubmit, isPending, leaseD
                         name="end_date"
                         id="end_date"
                         type="date"
+                        className="mt-1"
                     />
                 </div>
 

@@ -13,7 +13,6 @@ export const useLogin = () => {
         onSuccess: (response) => {
             // Store token and user in localStorage
             localStorage.setItem('token', response.data.token.access_token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
 
             // Update the auth query cache
             queryClient.setQueryData(['auth', 'user'], response.data.user);

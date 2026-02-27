@@ -66,7 +66,7 @@ class User extends Authenticatable
     }
 
     // Helper Methods
-    public function hasRole($role, $companyId = null)
+    public function hasCompanyRole($role, $companyId = null)
     {
         $query = $this->companies()->wherePivot('role_name', $role);
 
@@ -77,20 +77,6 @@ class User extends Authenticatable
         return $query->exists();
     }
 
-    public function isOwner($companyId = null)
-    {
-        return $this->hasRole('owner', $companyId);
-    }
-
-    public function isManager($companyId = null)
-    {
-        return $this->hasRole('manager', $companyId);
-    }
-
-    public function isTenant($companyId = null)
-    {
-        return $this->hasRole('tenant', $companyId);
-    }
 
     public function getCompanyRole($companyId)
     {

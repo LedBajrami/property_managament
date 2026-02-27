@@ -115,8 +115,8 @@ export const PropertyDetails = () => {
     };
 
     const invalidateQueries = () => {
-        queryClient.invalidateQueries({ queryKey: ['units'] });
-        queryClient.invalidateQueries({ queryKey: ['property'] });
+        queryClient.invalidateQueries({ queryKey: ['units', propertyId] });
+        queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
     };
 
     const handleAddUnit = (data: CreateUnitParams) => {
@@ -139,7 +139,7 @@ export const PropertyDetails = () => {
     };
 
     const handleDeleteUnit = (propertyId: number) => {
-        if (confirm("Are you sure you want to delete this property? This will also delete all associated units.")) {
+        if (confirm("Are you sure you want to delete this unit? ")) {
             deleteUnit(propertyId, {
                 onSuccess: () => {
                     invalidateQueries();

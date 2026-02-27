@@ -13,6 +13,7 @@ import {Properties} from "@/pages/Properties";
 import {PropertyDetails} from "@/pages/Properties/PropertyDetails";
 import {Leases} from "@/pages/Leases";
 import {UnitDetails} from "@/pages/Properties/Units/UnitDetails.tsx";
+import ForgotPassword from "@/pages/Auth/Password/ForgotPassword.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -36,6 +37,14 @@ export const router = createBrowserRouter([
                 element: (
                     <PublicRoute>
                         <SetPassword />
+                    </PublicRoute>
+                ),
+            },
+            {
+                path: '/forgot-password',
+                element: (
+                    <PublicRoute>
+                        <ForgotPassword />
                     </PublicRoute>
                 ),
             },

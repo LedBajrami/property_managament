@@ -14,6 +14,7 @@ export const useLogin = () => {
             // Store token and user in localStorage
             localStorage.setItem('token', response.data.token.access_token);
 
+
             // Update the auth query cache
             queryClient.setQueryData(['auth', 'user'], response.data.user);
 

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
-class ChangeUserPasswordNotification extends Notification
+class SetUserPasswordNotification extends Notification
 {
 //    use Queueable;
 
@@ -46,7 +46,7 @@ class ChangeUserPasswordNotification extends Notification
     protected function buildMailMessage($url)
     {
         return (new MailMessage)
-            ->subject(Lang::get('InfoTelecom Set Password'))
+            ->subject(Lang::get('Set Password'))
             ->line(Lang::get('Please click the button below to set your password.'))
             ->action(Lang::get('Set Password'), $url);
     }

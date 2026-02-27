@@ -71,10 +71,18 @@ trait ApiTrait
     {
         $message = "Login Successful user: " . $user->email;
         Log::info($message);
-        return $this->responseToJsonSuccess(
-            ['user' => new UserResource($user), 'token' => $credentials],
-            'Login Successful'
-        );
+
+        return response()->json([
+            'error' => false,
+            'message' => 'Login Successful',
+            'code' => 200,
+            'data' => [
+                'user' => new UserResource($user),
+                'token' => [
+                    'access_token' => $credentials['access_token'], // still send access token in body
+                ]
+            ]
+        ]);
     }
 
 

@@ -14,28 +14,14 @@ interface AuthServicesInterface
 {
     public function login(LoginRequest $request);
 
-    public function refresh(ApiRefreshTokenRequest $request);
+    public function refresh(Request $request);
 
     public function logout();
 
-    public function forgotPassword(ForgotPasswordRequest $request);
-
-    public function generateOtp();
-
-    public function generateToken();
-
-    public function generateOtpToken();
-
-    public function checkCode(CheckPasswordOtpRequest $request);
-
-    public function resetPassword(ResetPasswordRequest $request);
-
-    public function userState();
-
-    public function changePassword(PasswordUpdateRequest $request);
-
-    public function verify(Request $request, $id);
+    public function forgotPasswordEmail($request);
 
     public function resetPasswordEmail(Request $request);
+
+    public function resendPasswordResetEmailLink($id);
 
 }

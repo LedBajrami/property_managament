@@ -1,4 +1,6 @@
 export const LOGIN = "/login";
+export const RESEND_SET_PASSWORD_LINK = "/resend-reset-password-email-link";
+export const FORGOT_PASSWORD_EMAIL = "/forgot-password-email"
 export const USER_STATE = "/user-state";
 export const PROFILE = '/profile';
 export const PASSWORD_UPDATE = '/change-password';

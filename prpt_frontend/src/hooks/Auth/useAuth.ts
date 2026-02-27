@@ -10,10 +10,10 @@ export const useAuth = () => {
         queryFn: getUserState,
         enabled: !!token,
         retry: false,
+        staleTime: Infinity,
     });
-
     return {
-        user: data?.user,
+        user: data,
         isAuthenticated: !!data && !!token,
         isLoading,
         error,

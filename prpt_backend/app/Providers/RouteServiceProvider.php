@@ -33,6 +33,10 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(250)->by($request->ip());
         });
 
+        RateLimiter::for('refresh', function (Request $request) {
+            return Limit::perMinute(250)->by($request->ip());
+        });
+
         RateLimiter::for('forgotPassword', function (Request $request) {
             return Limit::perMinute(2)->by($request->ip());
         });
@@ -78,16 +82,6 @@ class RouteServiceProvider extends ServiceProvider
 
         //view profile
         RateLimiter::for('viewProfile', function (Request $request) {
-            return Limit::perMinute(250)->by($request->ip());
-        });
-
-        //request leave
-        RateLimiter::for('requestLeave', function (Request $request) {
-            return Limit::perMinute(250)->by($request->ip());
-        });
-
-        //work arrangement request
-        RateLimiter::for('workArrangementRequest', function (Request $request) {
             return Limit::perMinute(250)->by($request->ip());
         });
     }

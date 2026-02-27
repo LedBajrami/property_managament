@@ -3,15 +3,14 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { toast } from "sonner";
 import authHeader from "@/library/http/AuthTokenHeader";
 import { convertJSONToFormData } from "@/library/helpers/helperFunctions";
+import * as url from './urlHelpers';
 
-const API_URL = "http://127.0.0.1:8090/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const axiosApi: AxiosInstance = axios.create({
     baseURL: API_URL,
+    withCredentials: true,
 });
-
-// Default headers
-axiosApi.defaults.headers["Access-Control-Allow-Origin"] = "*";
 
 // Request Interceptor
 axiosApi.interceptors.request.use(
@@ -74,7 +73,7 @@ axiosApi.interceptors.response.use(
         }
         throw response;
     },
-    (error) => {
+    async (error) => {
         if (!error.response) {
             toast.error("Network Error", {
                 description: "Please check your internet connection",
@@ -85,12 +84,16 @@ axiosApi.interceptors.response.use(
         const { status, data, config } = error.response;
 
         if (status === 401) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            toast.error("Invalid Credentials", {
-                description: "Please try again",
-            });
-            // TODO: implement refresh token
+            try {
+                const response = await axiosApi.post(url.REFRESH);
+                const newToken = response.data.data.token.access_token;
+                localStorage.setItem('token', newToken);
+                error.config.headers.Authorization = 'Bearer ' + newToken;
+                return axiosApi(error.config);
+            } catch (refreshError) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
         } else if (status === 404) {
             toast.error(`Request Error: ${config.url}`, {
                 description: "Sorry! the page you are looking for could not be found",

@@ -7,6 +7,7 @@ use App\Http\Resources\Company\CompanyResource;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
+use App\Notifications\SetUserPasswordNotification;
 use App\Traits\ApiTrait;
 
 class CompanyService implements CompanyServiceInterface
@@ -46,7 +47,7 @@ class CompanyService implements CompanyServiceInterface
                 'role_name' => 'company-admin',
             ]);
 
-            // $adminUser->notify(new ChangePasswordNotification);
+            $adminUser->notify(new SetUserPasswordNotification());
             $adminUser->assignRole('company-admin');
 
             return $this->success(new CompanyResource($company), 'Company created successfully.');

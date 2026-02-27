@@ -11,7 +11,9 @@ import {CreateLeaseParams, UpdateLeaseParams} from "@/types/lease.ts";
 
 // @ts-ignore
 const loginRequest = (data: LoginData) => post(url.LOGIN, data, { skipSuccessNotification: true });
-const getUserState = () => get(url.USER_STATE);
+const resendSetPasswordLink = (id: string | undefined) => post(`${url.RESEND_SET_PASSWORD_LINK}/${id}`, {});
+const forgotPasswordEmail = (data: { email: string }) => post(url.FORGOT_PASSWORD_EMAIL, data);
+const getUserState = () => get(url.USER_STATE).then((res: any) => res.data.user);
 // const getUserProfile = () => get(url.PROFILE)
 // const editUserProfile = (data) => put(url.PROFILE, data)
 // const changePassword = (data) => put(url.PASSWORD_UPDATE, data)
@@ -95,6 +97,8 @@ const registerCompany = (data: CreateCompany) => post(`/register-company`, data)
 
 export {
     loginRequest,
+    resendSetPasswordLink,
+    forgotPasswordEmail,
     getUserState,
     // getUserProfile,
     // editUserProfile,

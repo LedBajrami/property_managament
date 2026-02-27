@@ -11,11 +11,11 @@ use App\Http\Controllers\Lease\LeaseController;
 
 // auth Login
 Route::middleware('throttle:login')->post('/login', [AuthController ::class, 'login'])->name('login');
-Route::middleware('throttle:forgotPassword')->post('/forgotPassword', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
-Route::middleware('throttle:resetPassword')->post('/resetPassword', [AuthController::class, 'resetPassword'])->name('resetPassword');
-Route::middleware('throttle:checkCode')->post('/checkCode', [AuthController::class, 'checkCode'])->name('checkCode');
-Route::get('/confirm-email/{id}', [AuthController::class, 'verify'])->name('confirmemail.verify');
-Route::post('/reset-password-email/{id}', [AuthController::class, 'resetPasswordEmail'])->middleware(['signed'])->name('password.temp.reset');
+Route::middleware('throttle:refresh')->post('/refresh', [AuthController ::class, 'refresh'])->name('refresh');
+Route::post('/resend-reset-password-email-link/{id}', [AuthController::class, 'resendPasswordResetEmailLink']);
+Route::post('/reset-password-email/{id}', [AuthController::class, 'resetPasswordEmail'])->name('password.temp.reset');
+Route::middleware(['throttle:forgotPassword'])->post('/forgot-password-email', [AuthController::class, 'forgotPasswordEmail'])->name('forgotPassword');
+
 // Create Company
 Route::post('/register-company', [CompanyController::class, 'createCompany'])->name('create.company');
 

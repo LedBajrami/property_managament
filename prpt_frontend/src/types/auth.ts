@@ -21,14 +21,12 @@ export interface LoginResponse {
 
 // User State
 export interface AuthResponse {
-    user: {
-        id: string;
-        first_name: string;
-        last_name: string;
-        email: string;
-        companies: Array<any>;
-        role: string;
-    }
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    companies: Array<any>;
+    role: string;
 }
 
 

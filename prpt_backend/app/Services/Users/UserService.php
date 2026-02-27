@@ -6,7 +6,7 @@ use App\Http\Resources\User\UserResource;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Models\User;
-use App\Notifications\ChangeUserPasswordNotification;
+use App\Notifications\SetUserPasswordNotification;
 use App\Traits\ApiTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -132,7 +132,7 @@ class UserService implements UserServiceInterface
             $user->assignRole($role);
 
             // Send notification to set password
-            $user->notify(new ChangeUserPasswordNotification());
+            $user->notify(new SetUserPasswordNotification());
 
             return $this->success(
                 new UserResource($user),
@@ -201,9 +201,7 @@ class UserService implements UserServiceInterface
     {
         try {
             $user = Auth::user();
-            return response()->json([
-                'user' => new UserResource($user),
-            ]);
+            return $this->success(['user' => new UserResource($user)]);
         } catch (\Throwable $th) {
             return $this->error($th);
         }

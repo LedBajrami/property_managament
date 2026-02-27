@@ -34,37 +34,21 @@ class AuthController extends Controller
         return $this->authServices->logout();
     }
 
-    public function refresh(ApiRefreshTokenRequest $request){
+    public function refresh(Request $request){
         return $this->authServices->refresh($request);
-    }
-
-    public function forgotPassword(ForgotPasswordRequest $request){
-        return $this->authServices->forgotPassword($request);
-    }
-
-    public function resetPassword(ResetPasswordRequest $request){
-        return $this->authServices->resetPassword($request);
-    }
-
-    public function checkCode(CheckPasswordOtpRequest $request){
-        return $this->authServices->checkCode($request);
-    }
-
-    public function userState(){
-        return $this->authServices->userState();
-    }
-
-    public function changePassword(PasswordUpdateRequest $request){
-        return $this->authServices->changePassword($request);
-    }
-
-    public function verify(Request $request, $id)
-    {
-        return $this->authServices->verify($request, $id);
     }
 
     public function resetPasswordEmail(Request $request)
     {
         return $this->authServices->resetPasswordEmail($request);
+    }
+
+    public function resendPasswordResetEmailLink($id)
+    {
+        return $this->authServices->resendPasswordResetEmailLink($id);
+    }
+    public function forgotPasswordEmail(Request $request)
+    {
+        return $this->authServices->forgotPasswordEmail($request);
     }
 }

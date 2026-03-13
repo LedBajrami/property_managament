@@ -79,6 +79,7 @@ export interface UpdateLeaseParams {
     deposit_amount?: number;
     move_in_date?: string;
     move_out_date?: string;
+    signed_date?: string;
     notice_date?: string;
     rent_due_day?: number;
     late_fee_amount?: number;
@@ -97,6 +98,13 @@ export interface TerminateLeaseParams {
     termination_reason: string;
     terminated_by: 'tenant' | 'landlord' | 'mutual';
     move_out_date?: string;
+}
+
+export interface RenewLeaseParams {
+    lease_id: number;
+    start_date: string;
+    end_date: string;
+    monthly_rent: number;
 }
 
 export interface CreateLeaseResponse {

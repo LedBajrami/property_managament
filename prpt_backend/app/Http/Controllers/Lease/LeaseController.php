@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Lease;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lease\CreateLeaseRequest;
+use App\Http\Requests\Lease\RenewLeaseRequest;
+use App\Http\Requests\Lease\UpdateLeaseRequest;
 use App\Models\Lease;
 use App\Services\Lease\LeaseServiceInterface;
 use Illuminate\Http\Request;
@@ -28,11 +30,15 @@ class LeaseController extends Controller
         return $this->leaseService->createLease($request);
     }
 
-    public function editLease(Lease $lease, CreateLeaseRequest $request) {
+    public function editLease(Lease $lease, UpdateLeaseRequest $request) {
         return $this->leaseService->editLease($lease, $request);
     }
 
-    public function deleteLease(Lease $lease) {
-        return $this->leaseService->deleteLease($lease);
+    public function terminateLease(Lease $lease) {
+        return $this->leaseService->terminateLease($lease);
+    }
+
+    public function renewLease($leaseId, RenewLeaseRequest $request) {
+        return $this->leaseService->renewLease($leaseId, $request);
     }
 }

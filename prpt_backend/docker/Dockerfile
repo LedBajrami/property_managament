@@ -32,8 +32,8 @@ RUN docker-php-ext-install \
     gd \
     zip
 
-# Install MongoDB extension
-RUN pecl install mongodb && docker-php-ext-enable mongodb
+# ✅ Install Redis extension (phpredis)
+RUN pecl install redis && docker-php-ext-enable redis
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

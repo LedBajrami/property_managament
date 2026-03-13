@@ -1,4 +1,5 @@
 export const LOGIN = "/login";
+export const REFRESH_TOKEN = "/refresh";
 export const RESEND_SET_PASSWORD_LINK = "/resend-reset-password-email-link";
 export const FORGOT_PASSWORD_EMAIL = "/forgot-password-email"
 export const USER_STATE = "/user-state";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import {
     Table,
     TableBody,
@@ -24,8 +24,17 @@ import {
     XCircle,
     CheckCircle,
     Building2,
-    MapPin,
+    MapPin, FileText, RefreshCw,
 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+
 import AdminLayout from "@/components/layouts/admin-layout.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -35,67 +44,14 @@ import { UpdateUnitParams } from "@/types/unit.ts";
 import { EditUnitModal } from "@/components/modals/Unit/edit-unit-modal.tsx";
 import { AddLeaseModal } from "@/components/modals/Lease/add-lease-modal.tsx";
 import { EditLeaseModal } from "@/components/modals/Lease/edit-lease-modal.tsx";
-import { CreateLeaseParams, UpdateLeaseParams } from "@/types/lease.ts";
+import {CreateLeaseParams, Lease, RenewLeaseParams, UpdateLeaseParams} from "@/types/lease.ts";
 import {useGetLeases} from "@/hooks/Leases/useGetLeases.ts";
 import {useCreateLease} from "@/hooks/Leases/useCreateLease.ts";
 import {useUpdateLease} from "@/hooks/Leases/useUpdateLease.ts";
 import {useTerminateLease} from "@/hooks/Leases/useTerminateLease.ts";
+import {useRenewLease} from "@/hooks/Leases/useRenewLease.ts";
+import {RenewLeaseModal} from "@/components/modals/Lease/renew-lease-modal.tsx";
 
-// MOCK DATA - Remove when backend is ready
-// const mockUnit = {
-//     id: 1,
-//     property_id: 1,
-//     unit_number: "A101",
-//     bedrooms: 2,
-//     bathrooms: 1,
-//     size_sqm: 85.5,
-//     monthly_rent: 1200,
-//     status: "available",
-//     property: {
-//         name: "Sunset Apartments",
-//         address: "123 Main Street, City, State"
-//     },
-//     current_lease: {
-//         resident: {
-//             first_name: "John",
-//             last_name: "Doe",
-//             email: "john@example.com",
-//             phone: "+1234567890"
-//         },
-//         start_date: "2024-01-01",
-//         end_date: "2024-12-31",
-//         monthly_rent: 1200,
-//         deposit_paid: true
-//     }
-// };
-
-// const mockLeases = [
-//     {
-//         id: 1,
-//         resident: { first_name: "John", last_name: "Doe", id: 1 },
-//         start_date: "2024-01-01",
-//         end_date: "2024-12-31",
-//         monthly_rent: 1200,
-//         deposit_amount: 2400,
-//         status: "active",
-//         deposit_paid: true,
-//         lease_type: "fixed",
-//         created_at: "2023-12-01"
-//     },
-//     {
-//         id: 2,
-//         resident: { first_name: "Jane", last_name: "Smith", id: 2 },
-//         start_date: "2023-01-01",
-//         end_date: "2023-12-31",
-//         monthly_rent: 1100,
-//         deposit_amount: 2200,
-//         status: "expired",
-//         deposit_paid: true,
-//         deposit_returned: true,
-//         lease_type: "fixed",
-//         created_at: "2022-12-01"
-//     }
-// ];
 
 export const UnitDetails = () => {
     const { id } = useParams();
@@ -103,7 +59,17 @@ export const UnitDetails = () => {
     const [isEditUnitModalOpen, setIsEditUnitModalOpen] = useState(false);
     const [isAddLeaseModalOpen, setIsAddLeaseModalOpen] = useState(false);
     const [isEditLeaseModalOpen, setIsEditLeaseModalOpen] = useState(false);
+    const [isRenewLeaseModalOpen, setIsRenewLeaseModalOpen] = useState(false);
     const [selectedLease, setSelectedLease] = useState<any>(null);
+    const [dateInputDialog, setDateInputDialog] = useState<{
+        open: boolean;
+        type: 'signed' | 'move_in' | null;
+        lease: any;
+    }>({
+        open: false,
+        type: null,
+        lease: null
+    });
 
     const queryClient = useQueryClient();
 
@@ -112,15 +78,11 @@ export const UnitDetails = () => {
     const { data: unit } = useGetUnit(unitId);
     const { data: leases } = useGetLeases(unitId);
 
-    const {
-        mutate: updateUnit,
-        isPending: isUpdatingUnit,
-        isSuccess: isUpdateUnitSuccess
-    } = useUpdateUnit();
-
+    const { mutate: updateUnit, isPending: isUpdatingUnit, isSuccess: isUpdateUnitSuccess} = useUpdateUnit();
     const { mutate: createLease, isPending: isCreatingLease, isSuccess: isCreateLeaseSuccess } = useCreateLease();
     const { mutate: updateLease, isPending: isUpdatingLease, isSuccess: isUpdateLeaseSuccess } = useUpdateLease();
     const { mutate: terminateLease, isPending: isTerminating } = useTerminateLease();
+    const { mutate: renewLease, isPending: isRenewingLease, isSuccess: isRenewLeaseSuccess } = useRenewLease();
 
 
 
@@ -173,8 +135,6 @@ export const UnitDetails = () => {
                 setIsAddLeaseModalOpen(false);
             }
         });
-        console.log("Create lease:", data);
-        setIsAddLeaseModalOpen(false);
     };
 
     const handleEditLease = (data: UpdateLeaseParams) => {
@@ -185,8 +145,6 @@ export const UnitDetails = () => {
                 setSelectedLease(null);
             }
         });
-        console.log("Update lease:", data);
-        setIsEditLeaseModalOpen(false);
     };
 
     const handleTerminateLease = (leaseId: number) => {
@@ -196,13 +154,56 @@ export const UnitDetails = () => {
                     invalidateQueries();
                 }
             });
-            console.log("Terminate lease:", leaseId);
         }
+    };
+
+    const handleRenewLease = (data: RenewLeaseParams) => {
+        if (confirm("Are you sure you want to renew this lease?")) {
+            renewLease(data, {
+                onSuccess: () => {
+                    invalidateQueries();
+                    setIsRenewLeaseModalOpen(false);
+                    setSelectedLease(null);
+                }
+            });
+        }
+    };
+
+    const openDateInputDialog = (lease: Lease, type: 'signed' | 'move_in') => {
+        setDateInputDialog({
+            open: true,
+            type,
+            lease
+        });
+    };
+
+    const handleDateSubmit = (date: string) => {
+        if (!dateInputDialog.lease) return;
+
+        const updateData: any = { lease_id: dateInputDialog.lease.id };
+
+        if (dateInputDialog.type === 'signed') {
+            updateData.signed_date = date;
+        } else if (dateInputDialog.type === 'move_in') {
+            updateData.move_in_date = date;
+        }
+
+        updateLease(updateData, {
+            onSuccess: () => {
+                invalidateQueries();
+                setDateInputDialog({ open: false, type: null, lease: null });
+            }
+        });
     };
 
     const openEditLeaseModal = (lease: any) => {
         setSelectedLease(lease);
         setIsEditLeaseModalOpen(true);
+    };
+
+    const openRenewLeaseModal = (lease: any) => {
+        setSelectedLease(lease);
+        setIsRenewLeaseModalOpen(true);
     };
 
     const activeLease = leases?.data?.find((l: any) => l.status === "active");
@@ -260,11 +261,11 @@ export const UnitDetails = () => {
                     <div className="relative overflow-hidden rounded-xl border border-white/20 bg-gradient-to-br from-purple-500/10 to-purple-600/5 backdrop-blur-sm p-6">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
                         <div className="relative">
-                            <div className="text-sm text-muted-foreground mb-1">Current Tenant</div>
+                            <div className="text-sm text-muted-foreground mb-1">Current Resident</div>
                             <div className="text-lg font-bold text-purple-600">
                                 {isOccupied && activeLease ?
                                     `${activeLease.resident.first_name} ${activeLease.resident.last_name}` :
-                                    "Available"
+                                    "No resident - Unit is Available"
                                 }
                             </div>
                         </div>
@@ -280,7 +281,7 @@ export const UnitDetails = () => {
                     </div>
                 </div>
 
-                {/* Unit Info and Current Tenant */}
+                {/* Unit Info and Current Resident */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Unit Information */}
                     <div className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl p-6">
@@ -328,11 +329,11 @@ export const UnitDetails = () => {
                         </div>
                     </div>
 
-                    {/* Current Tenant Info */}
+                    {/* Current Resident Info */}
                     <div className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl p-6">
                         <div className="absolute top-0 left-0 w-32 h-32 bg-green-500/5 rounded-full blur-3xl"></div>
                         <div className="relative">
-                            <h2 className="text-lg font-semibold mb-4 text-white">Current Tenant</h2>
+                            <h2 className="text-lg font-semibold mb-4 text-white">Current Resident</h2>
                             {isOccupied && activeLease ? (
                                 <div className="space-y-4">
                                     <div className="flex items-start gap-3">
@@ -415,7 +416,7 @@ export const UnitDetails = () => {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Tenant</TableHead>
+                                    <TableHead>Resident</TableHead>
                                     <TableHead>Lease Period</TableHead>
                                     <TableHead>Monthly Rent</TableHead>
                                     <TableHead>Deposit</TableHead>
@@ -473,30 +474,83 @@ export const UnitDetails = () => {
                                                 <Badge variant="outline" className={getStatusColor(lease.status)}>
                                                     {lease.status.charAt(0).toUpperCase() + lease.status.slice(1)}
                                                 </Badge>
+                                                {lease.status === 'terminated' &&
+                                                    lease.terminated_at &&
+                                                       <>
+                                                           <p className="inline mx-1">at</p>
+                                                           <Badge variant="outline" className={getStatusColor(lease.status)}>
+                                                               {lease.terminated_at}
+                                                           </Badge>
+                                                       </>
+                                                }
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="icon"
-                                                        onClick={() => openEditLeaseModal(lease)}
-                                                        title="Edit Lease"
-                                                        disabled={lease.status !== "active"}
-                                                    >
-                                                        <Edit className="h-4 w-4" />
-                                                    </Button>
+                                                    {/* Mark as Signed */}
+                                                    {lease.status === "draft" && !lease.signed_date && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => openDateInputDialog(lease, 'signed')}
+                                                            title="Mark as Signed"
+                                                            disabled={isUpdatingLease}
+                                                        >
+                                                            <FileText className="h-4 w-4 text-blue-500" />
+                                                        </Button>
+                                                    )}
+
+                                                    {/* Record Move-In */}
+                                                    {lease.status === "draft" && lease.signed_date && !lease.move_in_date && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => openDateInputDialog(lease, 'move_in')}
+                                                            title="Record Move-In & Activate"
+                                                            disabled={isUpdatingLease}
+                                                        >
+                                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        </Button>
+                                                    )}
+
+                                                    {/* Edit */}
+                                                    {lease.status === "active" && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => openEditLeaseModal(lease)}
+                                                            title="Edit Lease"
+                                                        >
+                                                            <Edit className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+
+                                                    {/* Terminate */}
                                                     {lease.status === "active" && (
                                                         <Button
                                                             variant="outline"
                                                             size="icon"
                                                             onClick={() => handleTerminateLease(lease.id)}
                                                             title="Terminate Lease"
+                                                            disabled={isTerminating}
                                                         >
                                                             <XCircle className="h-4 w-4 text-red-500" />
                                                         </Button>
                                                     )}
+
+                                                    {/* Renew Lease */}
+                                                    {lease.status === "terminated" && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => openRenewLeaseModal(lease)}
+                                                            title="Renew Lease"
+                                                        >
+                                                            <RefreshCw className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             </TableCell>
+
                                         </TableRow>
                                     ))
                                 )}
@@ -535,7 +589,80 @@ export const UnitDetails = () => {
                     onSubmit={handleEditLease}
                     leaseData={selectedLease}
                 />
+
+                {/* Renew Lease Modal */}
+                <RenewLeaseModal
+                    open={isRenewLeaseModalOpen}
+                    isPending={isRenewingLease}
+                    isSuccess={isRenewLeaseSuccess}
+                    onOpenChange={setIsRenewLeaseModalOpen}
+                    onSubmit={handleRenewLease}
+                    leaseData={selectedLease}
+                />
             </div>
+            {/* Date Input Dialog */}
+            <Dialog
+                open={dateInputDialog.open}
+                onOpenChange={(open) =>
+                    setDateInputDialog({ open, type: null, lease: null })
+                }
+            >
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {dateInputDialog.type === "signed"
+                                ? "Mark Lease as Signed"
+                                : "Record Move-In Date"}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-2">
+                        <div className="space-y-2">
+                            <Label>
+                                {dateInputDialog.type === "signed"
+                                    ? "Signed Date"
+                                    : "Move-In Date"}
+                            </Label>
+
+                            <Input
+                                type="date"
+                                id="date-input"
+                                defaultValue={new Date().toISOString().split("T")[0]}
+                            />
+                        </div>
+
+                        {dateInputDialog.type === "move_in" && (
+                            <div className="rounded-md border bg-muted p-3 text-sm">
+                                ✅ This will activate the lease and mark the unit as occupied
+                            </div>
+                        )}
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:justify-end">
+                        <Button
+                            onClick={() => {
+                                const input = document.getElementById(
+                                    "date-input"
+                                ) as HTMLInputElement
+                                handleDateSubmit(input.value)
+                            }}
+                            disabled={isUpdatingLease}
+                        >
+                            {isUpdatingLease ? "Saving..." : "Confirm"}
+                        </Button>
+
+                        <Button
+                            variant="outline"
+                            onClick={() =>
+                                setDateInputDialog({ open: false, type: null, lease: null })
+                            }
+                            disabled={isUpdatingLease}
+                        >
+                            Cancel
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AdminLayout>
     );
 };

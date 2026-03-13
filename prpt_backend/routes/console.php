@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
-
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::command('payments:update-statuses')->dailyAt('01:00');
+Schedule::command('leases:update-statuses')->dailyAt('02:00');
+Schedule::command('payments:send-reminders')->dailyAt('09:00');
+Schedule::command('leases:generate-monthly-payments')->monthlyOn(1, '03:00');

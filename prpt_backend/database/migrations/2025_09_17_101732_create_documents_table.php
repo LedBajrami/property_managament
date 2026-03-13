@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->morphs('documentable'); // creates documentable_id and documentable_type
             $table->string('file_path');
-            $table->enum('document_type', ['lease_agreement', 'receipt', 'id_document', 'other'])->default('other');
+            $table->enum('document_type', ['lease_agreement', 'receipt', 'id_document', 'property_photo', 'unit_photo', 'other'])->default('other');
             $table->string('original_name')->nullable();
             $table->string('mime_type')->nullable();
             $table->integer('file_size')->nullable();

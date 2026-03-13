@@ -13,23 +13,27 @@ class Lease extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_id',
+        'parent_lease_id',
         'resident_id',
         'unit_id',
         'start_date',
         'end_date',
         'monthly_rent',
         'deposit_amount',
+        'status',
         'signed_date',
         'move_in_date',
         'rent_due_day',
         'late_fee_amount',
         'late_fee_grace_days',
-        'least_type',
+        'lease_type',
         'auto_renew',
         'utilities_included',
         'parking_included',
         'pets_allowed',
         'special_terms',
+        'terminated_at'
     ];
 
     protected $casts = [

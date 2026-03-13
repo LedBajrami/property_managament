@@ -7,7 +7,7 @@ import { CreateLeaseParams } from "@/types/lease";
 import {useGetUnits} from "@/hooks/Unit/useGetUnits.ts";
 import {useGetResidents} from "@/hooks/User/useGetResidents.ts";
 
-export function AddLeaseModal({ open, onOpenChange, onSubmit, isPending, paramIds }: any) {
+export function AddLeaseModal({ open, onOpenChange, onSubmit, isPending, unitId, unitNumber }: any) {
     const { data: residents, isLoading: residentsLoading } = useGetResidents();
     const { data: units, isLoading: unitsLoading } = useGetUnits(5);
 
@@ -17,7 +17,7 @@ export function AddLeaseModal({ open, onOpenChange, onSubmit, isPending, paramId
 
         const createLeaseData: CreateLeaseParams = {
             resident_id: Number(formData.get("resident_id")),
-            unit_id: paramIds?.unit_id ? Number(paramIds.unit_id) : Number(formData.get("unit_id")),
+            unit_id: unitId ? Number(unitId) : Number(formData.get("unit_id")),
             start_date: formData.get("start_date") as string,
             end_date: formData.get("end_date") as string,
             monthly_rent: Number(formData.get("monthly_rent")),
@@ -76,10 +76,10 @@ export function AddLeaseModal({ open, onOpenChange, onSubmit, isPending, paramId
                 {/* Unit Dropdown or Fixed */}
                 <div>
                     <Label htmlFor="unit_id">Unit</Label>
-                    {paramIds?.unit_id ? (
+                    {unitId ? (
                         <Input
                             type="text"
-                            value={`Unit #${paramIds.unit_number || paramIds.unit_id}`}
+                            value={`Unit #${unitNumber || unitId}`}
                             disabled
                             className="mt-2"
                         />
@@ -138,10 +138,7 @@ export function AddLeaseModal({ open, onOpenChange, onSubmit, isPending, paramId
                     <Label htmlFor="late_fee_amount">Late Fee ($)</Label>
                     <Input name="late_fee_amount" id="late_fee_amount" type="number" step="0.01" placeholder="50.00" />
                 </div>
-                <div>
-                    <Label htmlFor="late_fee_grace_days">Grace Period (days)</Label>
-                    <Input name="late_fee_grace_days" id="late_fee_grace_days" type="number" placeholder="5" />
-                </div>
+
 
                 {/* Lease Type */}
                 <div>
@@ -168,10 +165,7 @@ export function AddLeaseModal({ open, onOpenChange, onSubmit, isPending, paramId
                     <input type="checkbox" name="parking_included" id="parking_included" />
                     <Label htmlFor="parking_included">Parking Included</Label>
                 </div>
-                <div className="flex items-center gap-2 mt-6">
-                    <input type="checkbox" name="pets_allowed" id="pets_allowed" />
-                    <Label htmlFor="pets_allowed">Pets Allowed</Label>
-                </div>
+
 
                 {/* Utilities */}
                 <div className="col-span-2">

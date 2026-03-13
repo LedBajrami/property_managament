@@ -9,15 +9,6 @@ class LeaseResource extends JsonResource
 {
     public function toArray($request): array
     {
-        $status = 'active';
-        if ($this->terminated_at) {
-            $status = 'terminated';
-        } elseif ($this->end_date && Carbon::now()->gt(Carbon::parse($this->end_date))) {
-            $status = 'expired';
-        } elseif (!$this->signed_date) {
-            $status = 'pending';
-        }
-
         return [
             'id' => $this->id,
             'resident' => $this->resident,
@@ -37,7 +28,8 @@ class LeaseResource extends JsonResource
             'parking_included' => $this->parking_included,
             'pets_allowed' => $this->pets_allowed,
             'special_terms' => $this->special_terms,
-            'status' => $status,
+            'status' => $this->status,
+            'terminated_at' => $this->terminated_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -5,7 +5,7 @@ import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {CreateCompany} from "@/types/company.ts";
 import {CreatePropertyParams, UpdatePropertyParams} from "@/types/property.ts";
 import {CreateUnitParams, UpdateUnitParams} from "@/types/unit.ts";
-import {CreateLeaseParams, UpdateLeaseParams} from "@/types/lease.ts";
+import {CreateLeaseParams, RenewLeaseParams, UpdateLeaseParams} from "@/types/lease.ts";
 
 
 
@@ -78,7 +78,12 @@ const editLease = (data: UpdateLeaseParams) => {
 
 const deleteLease = (unitId: number) => del(`${url.LEASE}/${unitId}`);
 
-const terminateLease = (leaseId?: number) => get(`${url.LEASE}/${leaseId}`);
+const terminateLease = (leaseId?: number) => get(`${url.LEASE}/terminate-lease/${leaseId}`);
+
+const renewLease = (data: RenewLeaseParams) => {
+    const { lease_id, ...renewLeaseData } = data;
+    return post(`${url.LEASE}/renew-lease/${lease_id}`, renewLeaseData);
+};
 
 // //Roles
 // const getRoles = (filters) => get(url.GET_ROLES, filters);
@@ -147,5 +152,6 @@ export {
     createLease,
     editLease,
     deleteLease,
-    terminateLease
+    terminateLease,
+    renewLease
 }

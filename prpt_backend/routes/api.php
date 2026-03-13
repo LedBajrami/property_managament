@@ -63,6 +63,7 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
         Route::get('/{lease}', [LeaseController::class, 'getLease'])->middleware(['can:view-leases', 'can:view,lease']);
         Route::post('', [LeaseController::class, 'createLease'])->middleware('can:create-leases');
         Route::put('/{lease}', [LeaseController::class, 'editLease'])->middleware(['can:edit-leases', ]);
-        Route::delete('/{lease}', [LeaseController::class, 'deleteLease'])->middleware('can:delete-leases');
+        Route::get('/terminate-lease/{lease}', [LeaseController::class, 'terminateLease'])->middleware('can:terminate-leases');
+        Route::post('/renew-lease/{leaseId}', [LeaseController::class, 'renewLease'])->middleware('can:terminate-leases');
     });
 });

@@ -3,7 +3,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { toast } from "sonner";
 import authHeader from "@/library/http/AuthTokenHeader";
 import { convertJSONToFormData } from "@/library/helpers/helperFunctions";
-import * as url from './urlHelpers';
+import {REFRESH_TOKEN} from "./urlHelpers";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,21 +35,23 @@ axiosApi.interceptors.request.use(
 );
 
 // Response Interceptor
+let refreshPromise: Promise<string> | null = null;
+
 axiosApi.interceptors.response.use(
     (response: AxiosResponse) => {
         if (response.status >= 200 && response.status <= 299) {
             const method = response.config.method?.toUpperCase();
             const successMessage = response.data?.message;
 
-            if (successMessage &&  successMessage !== "SUCCESS") {
-                // @ts-ignore
-                if (response.config.skipSuccessNotification) {
-                    return response;
-                } else {
-                    toast.success("Success", {
-                        description: successMessage,
-                    });
-                }
+            // @ts-ignore
+            if (response.config.skipSuccessNotification) {
+                return response;
+            }
+
+            if (successMessage && successMessage !== "SUCCESS") {
+                toast.success("Success", {
+                    description: successMessage,
+                });
             } else {
                 switch (method) {
                     case 'POST':
@@ -83,18 +85,39 @@ axiosApi.interceptors.response.use(
 
         const { status, data, config } = error.response;
 
-        if (status === 401) {
+        if (status === 401 && !config._retry) {
+            config._retry = true;
+
             try {
-                const response = await axiosApi.post(url.REFRESH);
-                const newToken = response.data.data.token.access_token;
-                localStorage.setItem('token', newToken);
-                error.config.headers.Authorization = 'Bearer ' + newToken;
-                return axiosApi(error.config);
+                if (!refreshPromise) {
+                    refreshPromise = axiosApi.post(REFRESH_TOKEN, {}, {
+                        skipSuccessNotification: true,
+                    } as any)
+                        .then(res => {
+                            const newToken = res.data.data.token.access_token;
+                            localStorage.setItem('token', newToken);
+                            axiosApi.defaults.headers.common['Authorization'] = 'Bearer ' + newToken;
+                            return newToken;
+                        })
+                        .finally(() => {
+                            refreshPromise = null;
+                        });
+                }
+
+                const newToken = await refreshPromise;
+                config.headers.Authorization = 'Bearer ' + newToken;
+                return axiosApi(config);
+
             } catch (refreshError) {
                 localStorage.removeItem('token');
                 window.location.href = '/login';
+                return Promise.reject(refreshError);
             }
-        } else if (status === 404) {
+        }
+
+        if (status === 401) return Promise.reject(error);
+
+        if (status === 404) {
             toast.error(`Request Error: ${config.url}`, {
                 description: "Sorry! the page you are looking for could not be found",
             });

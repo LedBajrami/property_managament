@@ -73,8 +73,31 @@ services:
                     cpus: '0.2'
                     memory: 128M
 
+    # Replace queue-worker with this:
+    horizon:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile
+            args:
+                user: prpt_backend_susr
+                uid: 1002
+        container_name: prpt_backend_horizon
+        restart: unless-stopped
+        command: php artisan horizon
+        volumes:
+            - ./:/var/www
+        networks:
+            - app-network
+        depends_on:
+            redis:
+                condition: service_healthy
+            postgres:
+                condition: service_healthy
+
 volumes:
     pg-data:
+        driver: local
+    redis-data:
         driver: local
 
 networks:

@@ -43,7 +43,7 @@ return new class extends Migration
             $table->boolean('auto_renew')->default(false);
 
             // Status & termination
-            $table->enum('status', ['active', 'expired', 'terminated'])->default('active');
+            $table->enum('status', ['draft', 'active', 'expired', 'terminated'])->default('draft');
             $table->text('termination_reason')->nullable();
             $table->enum('terminated_by', ['tenant', 'landlord', 'mutual'])->nullable();
             $table->timestamp('terminated_at')->nullable();

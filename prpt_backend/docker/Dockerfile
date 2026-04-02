@@ -43,8 +43,12 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
-# Create /var/www directory and set permissions
-RUN mkdir -p /var/www && chown -R $user:$user /var/www
+RUN mkdir -p /var/www && \
+    mkdir -p /var/www/storage && \
+    mkdir -p /var/www/bootstrap/cache && \
+    chown -R $user:www-data /var/www && \
+    chmod -R 775 /var/www/storage && \
+    chmod -R 775 /var/www/bootstrap/cache
 
 # Set working directory
 WORKDIR /var/www

@@ -73,7 +73,6 @@ services:
                     cpus: '0.2'
                     memory: 128M
 
-    # Replace queue-worker with this:
     horizon:
         build:
             context: ./docker

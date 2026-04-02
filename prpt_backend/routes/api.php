@@ -8,6 +8,7 @@ use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Property\PropertyController;
 use App\Http\Controllers\Unit\UnitController;
 use App\Http\Controllers\Lease\LeaseController;
+use App\Http\Controllers\Payment\PaymentController;
 
 // auth Login
 Route::middleware('throttle:login')->post('/login', [AuthController ::class, 'login'])->name('login');
@@ -66,4 +67,10 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
         Route::get('/terminate-lease/{lease}', [LeaseController::class, 'terminateLease'])->middleware('can:terminate-leases');
         Route::post('/renew-lease/{leaseId}', [LeaseController::class, 'renewLease'])->middleware('can:terminate-leases');
     });
+
+    // Payment Manual Control
+//    Route::prefix('payment')->middleware('throttle:paymentManagement')->group(function () {
+//        Route::post('/{paymentScheduleId}/record-payment', [PaymentController::class, 'recordPayment'])->middleware('can:record-payment');
+//        Route::get('/{paymentScheduleId}/transactions', [PaymentController::class, 'getTransactions'])->middleware('can:view-payment-schedule-transactions');
+//    });
 });

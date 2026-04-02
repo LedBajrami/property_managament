@@ -28,4 +28,9 @@ class PaymentTransaction extends Model
     {
         return $this->belongsTo(PaymentSchedule::class);
     }
+
+    public function receipt()
+    {
+        return $this->belongsTo(Document::class, 'receipt_document_id');
+    }
 }

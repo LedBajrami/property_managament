@@ -70,7 +70,7 @@ trait ApiTrait
     public function successLoginResponse($user, $credentials)
     {
         $message = "Login Successful user: " . $user->email;
-        Log::info($message);
+        Log::info($credentials);
 
         return response()->json([
             'error' => false,

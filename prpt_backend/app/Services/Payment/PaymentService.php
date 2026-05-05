@@ -44,10 +44,12 @@ class PaymentService implements PaymentServiceInterface
                 $schedule->update(['status' => 'paid']);
             }
 
+            // Generate receipt
             $receipt = $this->generateReceipt($transaction);
+
+            // Attach receipt to transaction
             $transaction->update(['receipt_document_id' => $receipt->id]);
 
-            // TODO: Generate receipt
             // TODO: Send confirmation email
 
             DB::commit();

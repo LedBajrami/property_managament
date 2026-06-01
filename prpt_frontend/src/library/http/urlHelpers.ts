@@ -26,6 +26,10 @@ export const UNIT = "/unit"
 // Lease
 export const LEASE = "/lease"
 
+// Payment
+export const PAYMENT_SCHEDULE = "/payment-schedule"
+export const DOCUMENT = "/document"
+
 
 
 

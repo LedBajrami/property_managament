@@ -32,44 +32,56 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         company.id == current_company_id
     )?.name;
 
+    const isResident = user?.role === "resident";
+
+    const managerNav = [
+        {
+            title: "Dashboard",
+            url: "/dashboard",
+            icon: IconDashboard,
+        },
+        {
+            title: "Properties",
+            url: "/properties/",
+            icon: Building2,
+        },
+        {
+            title: "Residents",
+            url: "/residents",
+            icon: Users,
+        },
+        {
+            title: "Leases",
+            url: "/leases",
+            icon: FileText,
+        },
+        {
+            title: "Payments",
+            url: "/payments",
+            icon: CreditCard,
+        },
+        {
+            title: "Team",
+            url: "/team",
+            icon: FolderKanban,
+        },
+    ];
+
+    const residentNav = [
+        {
+            title: "Dashboard",
+            url: "/dashboard",
+            icon: IconDashboard,
+        },
+    ];
+
     const sidebarData = {
         user: {
             name: user?.first_name ?? "Guest",
             email: user?.email ?? "guest@example.com",
             avatar: "/avatars/shadcn.jpg",
         },
-        navMain: [
-            {
-                title: "Dashboard",
-                url: "/dashboard",
-                icon: IconDashboard,
-            },
-            {
-                title: "Properties",
-                url: "/properties/",
-                icon: Building2,
-            },
-            {
-                title: "Residents",
-                url: "/residents",
-                icon: Users,
-            },
-            {
-                title: "Leases",
-                url: "/leases",
-                icon: FileText,
-            },
-            {
-                title: "Payments",
-                url: "/payments",
-                icon: CreditCard,
-            },
-            {
-                title: "Team",
-                url: "/team",
-                icon: FolderKanban,
-            },
-        ],
+        navMain: isResident ? residentNav : managerNav,
         navClouds: [
             {
                 title: "Capture",

@@ -14,6 +14,9 @@ import {PropertyDetails} from "@/pages/Properties/PropertyDetails";
 import {Leases} from "@/pages/Leases";
 import {UnitDetails} from "@/pages/Properties/Units/UnitDetails.tsx";
 import ForgotPassword from "@/pages/Auth/Password/ForgotPassword.tsx";
+import PaymentsPage from "@/pages/Payments";
+import PaymentOverviewPage from "@/pages/Payments/PaymentsOverview";
+import {LeaseDetail} from "@/pages/Leases/LeaseDetails";
 
 export const router = createBrowserRouter([
     {
@@ -136,6 +139,32 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 )
             },
+            {
+                path: '/leases/:id',
+                element: (
+                    <ProtectedRoute>
+                        <LeaseDetail />
+                    </ProtectedRoute>
+                )
+            },
+
+            // Payments (property managers / admins)
+            {
+                path: '/payments',
+                element: (
+                    <ProtectedRoute>
+                        <PaymentsPage />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: '/payments/overview',
+                element: (
+                    <ProtectedRoute>
+                        <PaymentOverviewPage />
+                    </ProtectedRoute>
+                )
+            }
         ],
     },
 ]);

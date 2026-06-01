@@ -6,6 +6,9 @@ import {CreateCompany} from "@/types/company.ts";
 import {CreatePropertyParams, UpdatePropertyParams} from "@/types/property.ts";
 import {CreateUnitParams, UpdateUnitParams} from "@/types/unit.ts";
 import {CreateLeaseParams, RenewLeaseParams, UpdateLeaseParams} from "@/types/lease.ts";
+import {PaymentScheduleFilters, RecordPaymentParams} from "@/types/payment.ts";
+import {downloadFile} from "./apiHelpers";
+import {RecordDepositPaidParams, RecordDepositReturnParams} from "@/types/deposit.ts";
 
 
 
@@ -65,8 +68,15 @@ const editUnit = (data: UpdateUnitParams) => {
 const deleteUnit = (unitId: number) => del(`${url.UNIT}/${unitId}`);
 
 // Leases
-const getLeases = (unitId?: number) => get(`${url.LEASE}?unit_id=${unitId}`);
-
+const getLeases = (filters?: { unit_id?: number; property_id?: number; status?: string; search?: string }) => {
+    const params = new URLSearchParams();
+    if (filters?.unit_id)     params.append('unit_id', String(filters.unit_id));
+    if (filters?.property_id) params.append('property_id', String(filters.property_id));
+    if (filters?.status)      params.append('status', filters.status);
+    if (filters?.search)      params.append('search', filters.search);
+    const qs = params.toString();
+    return get(`${url.LEASE}${qs ? `?${qs}` : ''}`);
+};
 const getLease = (leaseId?: number) => get(`${url.LEASE}/${leaseId}`);
 
 const createLease = (data: CreateLeaseParams) => post(url.LEASE, data);
@@ -84,6 +94,39 @@ const renewLease = (data: RenewLeaseParams) => {
     const { lease_id, ...renewLeaseData } = data;
     return post(`${url.LEASE}/renew-lease/${lease_id}`, renewLeaseData);
 };
+
+// Deposits
+
+const getDepositSummary = (leaseId: number) =>
+    get(`${url.LEASE}/${leaseId}/deposit`);
+
+const recordDepositPaid = (leaseId: number, data: RecordDepositPaidParams) =>
+    post(`${url.LEASE}/${leaseId}/deposit/record-paid`, data);
+
+const recordDepositReturn = (leaseId: number, data: RecordDepositReturnParams) =>
+    post(`${url.LEASE}/${leaseId}/deposit/record-return`, data);
+
+// Payments
+const buildPaymentScheduleQuery = (filters?: PaymentScheduleFilters) => {
+    const params = new URLSearchParams();
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.unit_id) params.append('unit_id', String(filters.unit_id));
+    if (filters?.lease_id) params.append('lease_id', String(filters.lease_id));
+    const query = params.toString();
+    return query ? `?${query}` : '';
+};
+
+const getPaymentSchedules = (filters?: PaymentScheduleFilters) =>
+    get(`${url.PAYMENT_SCHEDULE}${buildPaymentScheduleQuery(filters)}`);
+
+const getMyPaymentSchedules = (filters?: PaymentScheduleFilters) =>
+    get(`${url.PAYMENT_SCHEDULE}/mine${buildPaymentScheduleQuery(filters)}`);
+
+const recordPayment = (scheduleId: number, data: RecordPaymentParams) =>
+    post(`${url.PAYMENT_SCHEDULE}/${scheduleId}/record-payment`, data);
+
+const downloadReceipt = (documentId: number, filename: string) =>
+    downloadFile(`${url.DOCUMENT}/${documentId}/download`, {}, filename);
 
 // //Roles
 // const getRoles = (filters) => get(url.GET_ROLES, filters);
@@ -153,5 +196,14 @@ export {
     editLease,
     deleteLease,
     terminateLease,
-    renewLease
+    renewLease,
+
+    getDepositSummary,
+    recordDepositPaid,
+    recordDepositReturn,
+
+    getPaymentSchedules,
+    getMyPaymentSchedules,
+    recordPayment,
+    downloadReceipt,
 }

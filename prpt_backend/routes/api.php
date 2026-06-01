@@ -9,6 +9,8 @@ use App\Http\Controllers\Property\PropertyController;
 use App\Http\Controllers\Unit\UnitController;
 use App\Http\Controllers\Lease\LeaseController;
 use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\Document\DocumentController;
+use App\Http\Controllers\Deposit\DepositController;
 
 // auth Login
 Route::middleware('throttle:login')->post('/login', [AuthController ::class, 'login'])->name('login');
@@ -68,9 +70,21 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
         Route::post('/renew-lease/{leaseId}', [LeaseController::class, 'renewLease'])->middleware('can:terminate-leases');
     });
 
-    // Payment Manual Control
-//    Route::prefix('payment')->middleware('throttle:paymentManagement')->group(function () {
-//        Route::post('/{paymentScheduleId}/record-payment', [PaymentController::class, 'recordPayment'])->middleware('can:record-payment');
-//        Route::get('/{paymentScheduleId}/transactions', [PaymentController::class, 'getTransactions'])->middleware('can:view-payment-schedule-transactions');
-//    });
+    // Deposit management
+    Route::prefix('lease/{lease}/deposit')->middleware('throttle:paymentManagement')->group(function () {
+        Route::get('', [DepositController::class, 'getSummary'])->middleware('can:view-payments');
+        Route::post('record-paid', [DepositController::class, 'recordPaid'])->middleware('can:record-payments');
+        Route::post('record-return', [DepositController::class, 'recordReturn'])->middleware('can:record-payments');
+    });
+
+    // Payment schedules
+    Route::prefix('payment-schedule')->middleware('throttle:paymentManagement')->group(function () {
+        Route::get('mine', [PaymentController::class, 'getMyPaymentSchedules'])->middleware('can:view-payments');
+        Route::get('', [PaymentController::class, 'getPaymentSchedules'])->middleware('can:view-payments');
+        Route::post('{paymentSchedule}/record-payment', [PaymentController::class, 'recordPayment'])->middleware('can:record-payments');
+        Route::get('{paymentSchedule}/transactions', [PaymentController::class, 'getTransactions'])->middleware('can:view-payments');
+    });
+
+    // Documents
+    Route::get('document/{document}/download', [DocumentController::class, 'download'])->middleware('can:view-documents');
 });

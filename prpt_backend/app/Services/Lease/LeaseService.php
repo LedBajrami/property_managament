@@ -18,7 +18,7 @@ class LeaseService implements LeaseServiceInterface
     {
         try {
             $unitId = $request->input('unit_id');
-            $results = Lease::with('resident')->where('unit_id', $unitId)->get();
+            $results = Lease::with('resident')->get();
 
             $leases = $results->isEmpty()
                 ? []
@@ -43,6 +43,7 @@ class LeaseService implements LeaseServiceInterface
     {
         DB::beginTransaction();
         try {
+            $company = app('current_company');
             $data = $request->validated();
 
             // Check if unit already has active lease
@@ -54,7 +55,7 @@ class LeaseService implements LeaseServiceInterface
                 return $this->error("Unit already has an active lease");
             }
 
-            $lease = Lease::create($data);
+            $lease = Lease::create([...$data, 'company_id' => $company->id]);
 
             DB::commit();
 

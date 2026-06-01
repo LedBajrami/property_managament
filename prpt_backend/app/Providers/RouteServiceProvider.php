@@ -70,15 +70,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(250)->by($request->ip());
         });
 
-        //leaveType management
-        RateLimiter::for('leaveTypeManagement', function (Request $request) {
+        //lease management
+        RateLimiter::for('paymentManagement', function (Request $request) {
             return Limit::perMinute(250)->by($request->ip());
         });
 
-        //workArrangementType management
-        RateLimiter::for('workArrangementTypeManagement', function (Request $request) {
-            return Limit::perMinute(250)->by($request->ip());
-        });
 
         //view profile
         RateLimiter::for('viewProfile', function (Request $request) {

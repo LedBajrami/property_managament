@@ -10,11 +10,18 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    protected $paymentService;
-
-    public function __construct(PaymentService $paymentService)
+    public function __construct(protected PaymentService $paymentService)
     {
-        $this->paymentService = $paymentService;
+    }
+
+    public function getPaymentSchedules(Request $request)
+    {
+        return $this->paymentService->getPaymentSchedules($request);
+    }
+
+    public function getMyPaymentSchedules(Request $request)
+    {
+        return $this->paymentService->getMyPaymentSchedules($request);
     }
 
     public function recordPayment(RecordPaymentRequest $request, PaymentSchedule $paymentSchedule)

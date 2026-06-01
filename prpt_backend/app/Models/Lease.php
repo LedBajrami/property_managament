@@ -44,6 +44,11 @@ class Lease extends Model
         'utilities_included' => 'array',
     ];
 
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function resident(): BelongsTo
     {
         return $this->belongsTo(User::class, 'resident_id');
@@ -57,6 +62,11 @@ class Lease extends Model
     public function paymentSchedules(): HasMany
     {
         return $this->hasMany(PaymentSchedule::class);
+    }
+
+    public function depositTransactions()
+    {
+        return $this->hasMany(DepositTransaction::class);
     }
 
     public function documents(): MorphMany

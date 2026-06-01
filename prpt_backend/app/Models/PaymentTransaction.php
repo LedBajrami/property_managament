@@ -17,6 +17,7 @@ class PaymentTransaction extends Model
         'payment_method',
         'transaction_id',
         'status',
+        'receipt_document_id',
     ];
 
     protected $casts = [

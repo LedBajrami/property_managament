@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\ApiRefreshTokenRequest;
 use App\Http\Requests\Auth\CheckPasswordOtpRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\PasswordUpdateRequest;
+use App\Http\Requests\Auth\RegisterApplicantRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Services\Auth\AuthServicesInterface;
@@ -28,6 +29,11 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request){
         return $this->authServices->login($request);
+    }
+
+    public function registerApplicant(RegisterApplicantRequest $request)
+    {
+        return $this->authServices->registerApplicant($request);
     }
 
     public function logout(){

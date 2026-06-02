@@ -19,6 +19,22 @@ export interface LoginResponse {
     }
 }
 
+// Applicant Registration
+export interface RegisterApplicantData {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone?: string;
+}
+
+export interface RegisterApplicantResponse {
+    data: {
+        user_id: number;
+        email: string;
+    },
+    message: string;
+}
+
 // User State
 export interface AuthResponse {
     id: string;

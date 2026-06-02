@@ -11,16 +11,28 @@ use App\Http\Controllers\Lease\LeaseController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Deposit\DepositController;
+use App\Http\Controllers\Public\PublicPropertyController;
 
 // auth Login
 Route::middleware('throttle:login')->post('/login', [AuthController ::class, 'login'])->name('login');
 Route::middleware('throttle:refresh')->post('/refresh', [AuthController ::class, 'refresh'])->name('refresh');
+Route::middleware('throttle:login')->post('/register-applicant', [AuthController::class, 'registerApplicant']);
 Route::post('/resend-reset-password-email-link/{id}', [AuthController::class, 'resendPasswordResetEmailLink']);
 Route::post('/reset-password-email/{id}', [AuthController::class, 'resetPasswordEmail'])->name('password.temp.reset');
 Route::middleware(['throttle:forgotPassword'])->post('/forgot-password-email', [AuthController::class, 'forgotPasswordEmail'])->name('forgotPassword');
 
 // Create Company
 Route::post('/register-company', [CompanyController::class, 'createCompany'])->name('create.company');
+
+// Routers for Applicant Role
+Route::prefix('public')->group(function () {
+
+    // Property browsing
+    Route::get('properties', [PublicPropertyController::class, 'getPublicProperties']);
+    Route::get('properties/{id}', [PublicPropertyController::class, 'getPublicProperty']);
+    Route::get('properties/{propertyId}/units/{unitId}', [PublicPropertyController::class, 'getPublicPropertyUnit']);
+
+});
 
 // Get user state on init
 Route::middleware('auth:api')->get('user-state', [UserController::class, 'user_state']);
@@ -87,4 +99,9 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
 
     // Documents
     Route::get('document/{document}/download', [DocumentController::class, 'download'])->middleware('can:view-documents');
+
+
+    // Application submission — requires login (any authenticated user)
+//    Route::post('applications', [PublicApplicationController::class, 'store']);
+//    Route::get('applications/mine', [PublicApplicationController::class, 'mine']);
 });

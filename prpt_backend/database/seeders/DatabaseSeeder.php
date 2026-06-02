@@ -210,13 +210,17 @@ class DatabaseSeeder extends Seeder
                 'view-units',
                 'view-properties',
                 'view-payments',
-                'record-payments',
                 'create-maintenance-requests',
                 'view-maintenance-requests',
                 'upload-documents',
                 'view-documents',
                 'view-own-profile',
                 'edit-own-profile',
+            ],
+
+            'applicant' => [
+                'view-properties',
+                'view-units',
             ],
         ];
 

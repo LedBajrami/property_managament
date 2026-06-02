@@ -1,17 +1,13 @@
-import { LoginForm } from "@/components/login-form"
+import { RegisterApplicantForm } from "@/components/register-applicant-form"
 import { GalleryVerticalEnd } from "lucide-react";
-import { useLogin } from "@/hooks/Auth/useLogin.ts";
+import { useRegisterApplicant } from "@/hooks/Auth/useRegisterApplicant.ts";
+import { RegisterApplicantData } from "@/types/auth.ts";
 
-interface LoginData {
-    email: string;
-    password: string;
-}
+export default function RegisterApplicant() {
+    const { mutate: register, isPending } = useRegisterApplicant();
 
-export default function Login() {
-    const { mutate: login, isPending} = useLogin();
-
-    const handleLogin = (data: LoginData) => {
-        login(data);
+    const handleRegister = (data: RegisterApplicantData) => {
+        register(data);
     };
 
     return (
@@ -21,10 +17,10 @@ export default function Login() {
                     <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                         <GalleryVerticalEnd className="size-4" />
                     </div>
-                    Acme Inc.
+                    PropertyHub
                 </a>
-                <LoginForm
-                    onSubmit={handleLogin}
+                <RegisterApplicantForm
+                    onSubmit={handleRegister}
                     isLoading={isPending}
                 />
             </div>

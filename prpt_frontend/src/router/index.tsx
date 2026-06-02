@@ -17,6 +17,7 @@ import ForgotPassword from "@/pages/Auth/Password/ForgotPassword.tsx";
 import PaymentsPage from "@/pages/Payments";
 import PaymentOverviewPage from "@/pages/Payments/PaymentsOverview";
 import {LeaseDetail} from "@/pages/Leases/LeaseDetails";
+import RegisterApplicant from "@/pages/Auth/RegisterApplicant";
 
 export const router = createBrowserRouter([
     {
@@ -32,6 +33,14 @@ export const router = createBrowserRouter([
                 element: (
                     <PublicRoute>
                         <Login />
+                    </PublicRoute>
+                ),
+            },
+            {
+                path: '/register-applicant',
+                element: (
+                    <PublicRoute>
+                        <RegisterApplicant />
                     </PublicRoute>
                 ),
             },

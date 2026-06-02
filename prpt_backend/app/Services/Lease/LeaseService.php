@@ -9,6 +9,7 @@ use App\Notifications\Lease\SendLeaseActivatedNotification;
 use App\Traits\ApiTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class LeaseService implements LeaseServiceInterface
@@ -17,14 +18,23 @@ class LeaseService implements LeaseServiceInterface
     public function getLeases(Request $request)
     {
         try {
-            $unitId = $request->input('unit_id');
-            $results = Lease::with('resident')->get();
+            $user = Auth::user();
+            $query = Lease::with('resident');
 
-            $leases = $results->isEmpty()
-                ? []
-                : LeaseResource::collection($results);
+            if ($user->role === 'resident') {
+                // Residents only see their own leases
+                $query->where('resident_id', $user->id);
+            } else {
+                // Admins filter by unit if provided
+                if ($unitId = $request->input('unit_id')) {
+                    $query->where('unit_id', $unitId);
+                }
+            }
 
-            return $this->success(LeaseResource::collection($leases));
+            $results = $query->get();
+            $leases = $results->isEmpty() ? [] : LeaseResource::collection($results);
+
+            return $this->success($leases);
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }

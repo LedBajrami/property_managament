@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ApiRefreshTokenRequest;
+use App\Http\Requests\Auth\RegisterApplicantRequest;
 use App\Models\User;
 use App\Notifications\SetUserPasswordNotification;
 use App\Traits\ApiTrait;
@@ -68,6 +69,38 @@ class AuthServices implements AuthServicesInterface
             }
         } catch (\Exception $exception) {
             return $this->error($exception);
+        }
+    }
+
+    public function registerApplicant(RegisterApplicantRequest $request)
+    {
+        try {
+            $data = $request->validated();
+
+            // Create applicant user without company
+            $user = User::create([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                // password is null until user sets it via email link
+            ]);
+
+            // Assign applicant role
+            $user->assignRole('applicant');
+
+            // Send password setup notification
+            $user->notify(new SetUserPasswordNotification());
+
+            return $this->success(
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                ],
+                'Registration successful! Check your email to set your password.'
+            );
+        } catch (\Exception $exception) {
+            return $this->error($exception->getMessage());
         }
     }
 

@@ -1,6 +1,6 @@
 import {del, get, post, put} from "./apiHelpers";
 import * as url from './urlHelpers';
-import {LoginData, ResetPasswordParams} from "@/types/auth.ts";
+import {LoginData, RegisterApplicantData, ResetPasswordParams} from "@/types/auth.ts";
 import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {CreateCompany} from "@/types/company.ts";
 import {CreatePropertyParams, UpdatePropertyParams} from "@/types/property.ts";
@@ -17,6 +17,9 @@ const loginRequest = (data: LoginData) => post(url.LOGIN, data, { skipSuccessNot
 const resendSetPasswordLink = (id: string | undefined) => post(`${url.RESEND_SET_PASSWORD_LINK}/${id}`, {});
 const forgotPasswordEmail = (data: { email: string }) => post(url.FORGOT_PASSWORD_EMAIL, data);
 const getUserState = () => get(url.USER_STATE).then((res: any) => res.data.user);
+
+const registerApplicant = (data: RegisterApplicantData) => post('/register-applicant', data);
+
 // const getUserProfile = () => get(url.PROFILE)
 // const editUserProfile = (data) => put(url.PROFILE, data)
 // const changePassword = (data) => put(url.PASSWORD_UPDATE, data)
@@ -145,6 +148,7 @@ const registerCompany = (data: CreateCompany) => post(`/register-company`, data)
 
 export {
     loginRequest,
+    registerApplicant,
     resendSetPasswordLink,
     forgotPasswordEmail,
     getUserState,

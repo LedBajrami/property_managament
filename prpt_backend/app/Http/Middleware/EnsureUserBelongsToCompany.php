@@ -10,6 +10,14 @@ class EnsureUserBelongsToCompany
 {
     public function handle(Request $request, Closure $next)
     {
+        $user = auth()->user();
+
+        // Applicants are not tied to a company — let them through immediately
+        if ($user->role === 'applicant') {
+            return $next($request);
+        }
+
+
         $companyId = $request->header('X-Company-ID'); // client sends this in every request header
 
         if (!$companyId) {

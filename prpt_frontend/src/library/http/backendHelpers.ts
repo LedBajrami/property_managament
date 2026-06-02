@@ -9,6 +9,7 @@ import {CreateLeaseParams, RenewLeaseParams, UpdateLeaseParams} from "@/types/le
 import {PaymentScheduleFilters, RecordPaymentParams} from "@/types/payment.ts";
 import {downloadFile} from "./apiHelpers";
 import {RecordDepositPaidParams, RecordDepositReturnParams} from "@/types/deposit.ts";
+import {PropertyFilters, SubmitApplicationParams} from "@/types/publicProperty.ts";
 
 
 
@@ -144,6 +145,34 @@ const downloadReceipt = (documentId: number, filename: string) =>
 const registerCompany = (data: CreateCompany) => post(`/register-company`, data);
 
 
+// ─── Public Properties ────────────────────────────────────────────────────
+
+const buildPublicPropertyQuery = (filters?: PropertyFilters): string => {
+    const params = new URLSearchParams();
+    if (filters?.location)      params.append('location', filters.location);
+    if (filters?.property_type) params.append('property_type', filters.property_type);
+    if (filters?.min_rent)      params.append('min_rent', String(filters.min_rent));
+    if (filters?.max_rent)      params.append('max_rent', String(filters.max_rent));
+    if (filters?.bedrooms)      params.append('bedrooms', String(filters.bedrooms));
+    const qs = params.toString();
+    return qs ? `?${qs}` : '';
+};
+
+export const getPublicProperties = (filters?: PropertyFilters) =>
+    get(`${url.PUBLIC_PROPERTIES}${buildPublicPropertyQuery(filters)}`);
+
+export const getPublicProperty = (id: number) =>
+    get(`${url.PUBLIC_PROPERTIES}/${id}`);
+
+export const getPublicPropertyUnit = (propertyId: number, unitId: number) =>
+    get(`${url.PUBLIC_PROPERTIES}/${propertyId}/units/${unitId}`);
+
+// ─── Applications
+export const submitApplication = (data: SubmitApplicationParams) =>
+    post(url.PUBLIC_APPLICATIONS, data);
+
+export const getMyApplications = () =>
+    get(`${url.PUBLIC_APPLICATIONS}/mine`);
 
 
 export {

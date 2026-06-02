@@ -1,5 +1,4 @@
 FROM php:8.2-fpm
-
 ARG user=prpt_backend_susr
 ARG uid=1002
 
@@ -32,13 +31,13 @@ RUN docker-php-ext-install \
     gd \
     zip
 
-# ✅ Install Redis extension (phpredis)
+# Install Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Create system user to run Composer and Artisan Commands
+# Create system user
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
@@ -50,12 +49,14 @@ RUN mkdir -p /var/www && \
     chmod -R 775 /var/www/storage && \
     chmod -R 775 /var/www/bootstrap/cache
 
-# Set working directory
+# Copy and register entrypoint
+COPY --chown=$user:www-data entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 WORKDIR /var/www
 
-# Switch to user
 USER $user
 
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]
-
 EXPOSE 9000

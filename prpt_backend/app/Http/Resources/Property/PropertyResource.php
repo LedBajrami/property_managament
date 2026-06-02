@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Property;
 
+use App\Http\Resources\Unit\UnitResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,7 @@ class PropertyResource extends JsonResource
             'monthly_bill' => $this->monthly_bill,
 
             // Units stats (computed from eager-loaded relation)
-            'total_units' => $this->units->count(),
+            'units' => UnitResource::collection($this->whenLoaded('units')),            'total_units' => $this->units->count(),
             'available_units' => $this->units->where('status', 'available')->count(),
             'occupied_units' => $this->units->where('status', 'occupied')->count(),
             'maintenance_units' => $this->units->where('status', 'maintenance')->count(),

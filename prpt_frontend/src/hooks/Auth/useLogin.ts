@@ -22,6 +22,7 @@ export const useLogin = () => {
             toast.success('Login successful!');
 
             // Handle navigation based on company count
+
             if (response.data.user.companies.length > 1) {
                 navigate('/select-company');
             } else if (response.data.user.companies.length === 1) {

@@ -12,6 +12,8 @@ use App\Services\Lease\LeaseService;
 use App\Services\Lease\LeaseServiceInterface;
 use App\Services\Property\PropertyService;
 use App\Services\Property\PropertyServiceInterface;
+use App\Services\Public\Resident\Applications\PublicApplicationService;
+use App\Services\Public\Resident\Applications\PublicApplicationServiceInterface;
 use App\Services\Public\Resident\Properties\PublicPropertiesService;
 use App\Services\Public\Resident\Properties\PublicPropertiesServiceInterface;
 use App\Services\Unit\UnitService;
@@ -35,6 +37,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bind(LeaseServiceInterface::class,LeaseService::class);
         $this->app->bind(DepositServiceInterface::class, DepositService::class);
         $this->app->bind(PublicPropertiesServiceInterface::class,PublicPropertiesService::class);
+        $this->app->bind(PublicApplicationServiceInterface::class, PublicApplicationService::class);
     }
 
     /**

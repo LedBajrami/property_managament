@@ -30,6 +30,10 @@ export const LEASE = "/lease"
 export const PAYMENT_SCHEDULE = "/payment-schedule"
 export const DOCUMENT = "/document"
 
+export const PUBLIC_PROPERTIES  = '/public/properties';
+export const PUBLIC_APPLICATIONS = '/public/applications';
+
+
 
 
 

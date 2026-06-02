@@ -1,21 +1,23 @@
 import { Building2, ArrowRight, LogOut } from 'lucide-react';
 import { useState } from 'react';
-import {useNavigate} from "react-router-dom";
-import {useQuery} from "@tanstack/react-query";
-import {getUserState} from "@/library/http/backendHelpers.ts";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUserState } from "@/library/http/backendHelpers.ts";
 
 export const SelectCompany = () => {
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
     const { data: user, isLoading: cacheLoading } = useQuery({
         queryKey: ['auth', 'user'],
         queryFn: getUserState,
         staleTime: Infinity,
+        initialData: () => queryClient.getQueryData(['auth', 'user']),
     });
+    console.log('[SelectCompany]', { user, cacheLoading });
     if (cacheLoading || !user) return <div>Loading...</div>;
-
-
-    const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
 
     const handleSelectCompany = async (companyId: string) => {
         setSelectedId(companyId);
@@ -32,8 +34,6 @@ export const SelectCompany = () => {
         localStorage.removeItem('current_company_id');
         navigate('/login');
     };
-
-
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">

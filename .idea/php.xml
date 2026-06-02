@@ -145,6 +145,19 @@
       <path value="$PROJECT_DIR$/prpt_backend/vendor/tijsverkoyen/css-to-inline-styles" />
       <path value="$PROJECT_DIR$/prpt_backend/vendor/phpunit/php-file-iterator" />
       <path value="$PROJECT_DIR$/prpt_backend/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/dompdf/php-svg-lib" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/dompdf/php-font-lib" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/laravel/sentinel" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/laravel/horizon" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/barryvdh/laravel-dompdf" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/thecodingmachine/safe" />
+      <path value="$PROJECT_DIR$/prpt_backend/vendor/predis/predis" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

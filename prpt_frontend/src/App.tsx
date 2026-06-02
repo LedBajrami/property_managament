@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from "@/components/theme-provider"
@@ -18,13 +18,20 @@ const queryClient = new QueryClient({
 
 function AppContent() {
     const { isLoading } = useAuth();
+    const location = useLocation();
 
     useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible') {
-                queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
-            }
-        };
+        console.log('[App] location changed to:', location.pathname);
+        console.trace(); // this will show the call stack
+    }, [location]);
+
+    useEffect(() => {
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+            // Don't invalidate auth — invalidate other queries if needed
+            queryClient.invalidateQueries({ queryKey: ['data'] }); // example
+        }
+      };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);

@@ -28,7 +28,8 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     if (allowedRoles && user && !allowedRoles.includes(user.role)) {
         return <Navigate to="/dashboard" replace />; // Redirect to dashboard if role not allowed
     }
-
+    console.log('[ProtectedRoute]', { user, isAuthenticated, isLoading });
+    console.log('[ProtectedRoute] rendering children for path:', window.location.pathname);
     return <>{children}</>;
 };
 

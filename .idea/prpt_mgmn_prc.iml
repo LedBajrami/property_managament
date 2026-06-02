@@ -5,7 +5,6 @@
       <sourceFolder url="file://$MODULE_DIR$/prpt_backend/app" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/prpt_backend/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
       <sourceFolder url="file://$MODULE_DIR$/prpt_backend/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
-      <sourceFolder url="file://$MODULE_DIR$/prpt_backend/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/prpt_backend/tests" isTestSource="true" packagePrefix="Tests\" />
       <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/carbonphp/carbon-doctrine-types" />
@@ -137,6 +136,19 @@
       <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/prpt_backend/storage/app" />
       <excludeFolder url="file://$MODULE_DIR$/prpt_backend/storage/framework" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/barryvdh/laravel-dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/doctrine/dbal" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/doctrine/deprecations" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/dompdf/dompdf" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/dompdf/php-font-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/dompdf/php-svg-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/laravel/horizon" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/laravel/sentinel" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/masterminds/html5" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/predis/predis" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/psr/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/sabberworm/php-css-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/prpt_backend/vendor/thecodingmachine/safe" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

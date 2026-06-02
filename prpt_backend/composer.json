@@ -13,6 +13,7 @@
         "laravel/horizon": "^5.45",
         "laravel/passport": "^13.0",
         "laravel/tinker": "^2.10.1",
+        "predis/predis": "^3.5",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
     app:
         build:
@@ -7,9 +6,10 @@ services:
             dockerfile: Dockerfile
             args:
                 user: prpt_backend_susr
-                uid: 1002
+                uid: 1000
         container_name: prpt_backend_app
         restart: unless-stopped
+        user: "1000:1000"
         volumes:
             - ./:/var/www
             - ./docker/php/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -19,7 +19,6 @@ services:
         depends_on:
             postgres:
                 condition: service_healthy
-
     nginx:
         image: nginx:1.21.6-alpine
         container_name: prpt_backend_nginx
@@ -33,7 +32,6 @@ services:
             - app-network
         depends_on:
             - app
-
     postgres:
         image: postgres:17
         container_name: prpt_backend_pg
@@ -53,7 +51,6 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-
     redis:
         image: redis:alpine
         container_name: prpt_backend_redis
@@ -72,16 +69,16 @@ services:
                 limits:
                     cpus: '0.2'
                     memory: 128M
-
     horizon:
         build:
             context: ./docker
             dockerfile: Dockerfile
             args:
                 user: prpt_backend_susr
-                uid: 1002
+                uid: 1000
         container_name: prpt_backend_horizon
         restart: unless-stopped
+        user: "1000:1000"
         command: php artisan horizon
         volumes:
             - ./:/var/www
@@ -92,13 +89,11 @@ services:
                 condition: service_healthy
             postgres:
                 condition: service_healthy
-
 volumes:
     pg-data:
         driver: local
     redis-data:
         driver: local
-
 networks:
     app-network:
         driver: bridge

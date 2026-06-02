@@ -5,6 +5,7 @@ import {AuthResponse} from "@/types/auth.ts";
 export const useAuth = () => {
     const token = localStorage.getItem('token');
 
+
     const { data, isLoading, error } = useQuery<AuthResponse>({
         queryKey: ['auth', 'user'],
         queryFn: getUserState,

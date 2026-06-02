@@ -12,6 +12,7 @@ use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Deposit\DepositController;
 use App\Http\Controllers\Public\PublicPropertyController;
+use App\Http\Controllers\Public\PublicApplicationController;
 
 // auth Login
 Route::middleware('throttle:login')->post('/login', [AuthController ::class, 'login'])->name('login');
@@ -101,7 +102,7 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
     Route::get('document/{document}/download', [DocumentController::class, 'download'])->middleware('can:view-documents');
 
 
-    // Application submission — requires login (any authenticated user)
-//    Route::post('applications', [PublicApplicationController::class, 'store']);
-//    Route::get('applications/mine', [PublicApplicationController::class, 'mine']);
+    // Application submission
+    Route::post('public/applications', [PublicApplicationController::class, 'store']);
+    Route::get('public/applications/mine', [PublicApplicationController::class, 'mine']);
 });

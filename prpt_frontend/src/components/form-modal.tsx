@@ -15,7 +15,7 @@ interface FormModalProps {
     title: string;
     description?: string;
     children: ReactNode;
-    onSubmit: (e: React.FormEvent) => void;
+    onSubmit: React.FormEventHandler<HTMLFormElement>;
     isSubmitting?: boolean;
     submitText?: string;
     cancelText?: string;

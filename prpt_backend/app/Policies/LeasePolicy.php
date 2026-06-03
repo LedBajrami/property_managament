@@ -13,7 +13,7 @@ class LeasePolicy
      */
     public function view(User $user, Lease $lease): bool
     {
-        if ($user->role === 'resident') {
+        if ($user->hasRole('resident')) {
             return $lease->resident_id === $user->id;
         }
         return $lease->unit->property->company_id == app('current_company')->id;

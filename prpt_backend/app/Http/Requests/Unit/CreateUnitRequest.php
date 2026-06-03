@@ -29,6 +29,9 @@ class CreateUnitRequest extends FormRequest
             'size_sqm' => 'required|numeric',
             'monthly_rent' => 'required|numeric',
             'status' => 'required|string',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_photos' => 'nullable|array|max:8',
+            'gallery_photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ];
     }
 }

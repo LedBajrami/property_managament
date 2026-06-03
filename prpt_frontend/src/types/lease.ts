@@ -23,7 +23,7 @@ export interface Lease {
     lease_type: 'fixed' | 'month-to-month' | 'renewal';
     parent_lease_id?: number;
     auto_renew: boolean;
-    status: 'active' | 'expired' | 'terminated';
+    status: 'draft' | 'active' | 'expired' | 'terminated';
     termination_reason?: string;
     terminated_by?: 'tenant' | 'landlord' | 'mutual';
     terminated_at?: string;
@@ -32,6 +32,12 @@ export interface Lease {
     pets_allowed: boolean;
     special_terms?: string;
     lease_document_id?: number;
+    documents?: Array<{
+        id: number;
+        document_type: string;
+        original_name: string;
+        mime_type?: string;
+    }>;
     created_at: string;
     updated_at: string;
     resident?: {

@@ -3,6 +3,7 @@
 namespace App\Services\Public\Resident\Applications;
 
 use App\Http\Requests\Public\StoreApplicationRequest;
+use App\Jobs\Notifications\SendApplicationSubmittedNotification;
 use App\Models\RentalApplication;
 use App\Models\Unit;
 use App\Traits\ApiTrait;
@@ -23,6 +24,10 @@ class PublicApplicationService implements PublicApplicationServiceInterface
 
             if (!$unit) {
                 return $this->error('Unit not found', 404);
+            }
+
+            if ($unit->status !== 'available') {
+                return $this->error('This unit is not available for applications.', 422);
             }
 
             // Prevent duplicate pending applications for the same unit
@@ -46,6 +51,8 @@ class PublicApplicationService implements PublicApplicationServiceInterface
                 'references'        => $validated['references'] ?? [],
                 'status'            => 'pending',
             ]);
+
+            dispatch(new SendApplicationSubmittedNotification($application));
 
             return $this->success($application, 'Application submitted successfully!', 201);
 

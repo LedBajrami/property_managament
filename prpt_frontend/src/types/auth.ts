@@ -10,7 +10,7 @@ export interface LoginResponse {
             access_token: string;
         };
         user: {
-            id: string;
+            id: number;
             name: string;
             email: string;
             companies: Array<any>;
@@ -37,7 +37,7 @@ export interface RegisterApplicantResponse {
 
 // User State
 export interface AuthResponse {
-    id: string;
+    id: number;
     first_name: string;
     last_name: string;
     email: string;

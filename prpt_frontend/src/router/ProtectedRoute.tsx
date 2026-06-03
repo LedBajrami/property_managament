@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/Auth/useAuth.ts';
 import { LoaderPinwheel } from "lucide-react"
 
@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const { user, isAuthenticated, isLoading } = useAuth();
+    const location = useLocation();
 
     if (isLoading) {
         return <LoaderPinwheel
@@ -25,11 +26,17 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
         return <Navigate to="/login" replace />;
     }
 
+    const hasMultipleCompanies = (user?.companies?.length ?? 0) > 1;
+    const hasSelectedCompany = !!localStorage.getItem('current_company_id');
+
+    if (hasMultipleCompanies && !hasSelectedCompany && location.pathname !== '/select-company') {
+        return <Navigate to="/select-company" replace />;
+    }
+
     if (allowedRoles && user && !allowedRoles.includes(user.role)) {
         return <Navigate to="/dashboard" replace />; // Redirect to dashboard if role not allowed
     }
-    console.log('[ProtectedRoute]', { user, isAuthenticated, isLoading });
-    console.log('[ProtectedRoute] rendering children for path:', window.location.pathname);
+
     return <>{children}</>;
 };
 

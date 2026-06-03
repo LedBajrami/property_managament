@@ -7,6 +7,11 @@ class UnitResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $photos = $this->relationLoaded('documents')
+            ? $this->documents->where('document_type', 'unit_photo')->values()
+            : collect();
+        $thumbnail = $photos->first();
+
         return [
             'id' => $this->id,
             'property_id' => $this->property_id,
@@ -16,11 +21,20 @@ class UnitResource extends JsonResource
             'size_sqm' => $this->size_sqm,
             'monthly_rent' => $this->monthly_rent,
             'status' => $this->status,
+            'thumbnail_url' => $thumbnail ? url('/api/public/documents/' . $thumbnail->id . '/view') : null,
+            'gallery' => $photos->map(fn ($photo) => [
+                'id' => $photo->id,
+                'url' => url('/api/public/documents/' . $photo->id . '/view'),
+                'original_name' => $photo->original_name,
+            ]),
             'property' => $this->whenLoaded('property', function() {
                 return [
                     'id' => $this->property->id,
                     'name' => $this->property->name,
                     'address' => $this->property->address,
+                    'property_type' => $this->property->property_type,
+                    'amenities' => $this->property->amenities,
+                    'parking_spaces' => $this->property->parking_spaces,
                 ];
             }),
             'current_lease' => $this->whenLoaded('leases', function() {

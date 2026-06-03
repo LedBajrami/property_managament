@@ -1,19 +1,31 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { UpdatePropertyParams} from "@/types/property";
+import { Property, UpdatePropertyParams} from "@/types/property";
 import { FormModal } from "@/components/form-modal.tsx";
 import {FormEvent} from "react";
 
-export function EditPropertyModal({ open, onOpenChange, onSubmit, isPending, propertyData }: any) {
+interface EditPropertyModalProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onSubmit: (data: UpdatePropertyParams) => void;
+    isPending: boolean;
+    isSuccess?: boolean;
+    propertyData?: Property;
+}
+
+export function EditPropertyModal({ open, onOpenChange, onSubmit, isPending, propertyData }: EditPropertyModalProps) {
 
     const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!propertyData) {
+            return;
+        }
 
         const formData = new FormData(e.currentTarget);
 
         const updatePropertyData: UpdatePropertyParams = {
-            property_id: propertyData?.id,
+            property_id: propertyData.id,
             name: formData.get("name") as string,
             address: formData.get("address") as string,
             property_type: formData.get("property_type") as string,
@@ -22,19 +34,20 @@ export function EditPropertyModal({ open, onOpenChange, onSubmit, isPending, pro
             year_built: formData.get("year_built") ? Number(formData.get("year_built")) : undefined,
             parking_spaces: formData.get("parking_spaces") ? Number(formData.get("parking_spaces")) : 0,
             description: formData.get("description") as string || undefined,
+            thumbnail: formData.get("thumbnail") instanceof File && (formData.get("thumbnail") as File).size > 0
+                ? formData.get("thumbnail") as File
+                : undefined,
         };
 
         onSubmit(updatePropertyData);
     };
-    console.log(propertyData)
-
     return (
         <FormModal
             open={open}
             onOpenChange={onOpenChange}
             title=""
             description=""
-            onSubmit={handleFormSubmit as any}
+            onSubmit={handleFormSubmit}
             submitText="Edit Property"
             size="md"
             isSubmitting={isPending}
@@ -126,6 +139,26 @@ export function EditPropertyModal({ open, onOpenChange, onSubmit, isPending, pro
                     type="number"
                     placeholder="20"
                     min="0"
+                />
+            </div>
+
+            <div className="col-span-2">
+                <Label htmlFor="thumbnail">Thumbnail Photo</Label>
+                {propertyData?.thumbnail_url && (
+                    <div className="mt-2 h-28 rounded-md border border-border overflow-hidden bg-muted">
+                        <img
+                            src={propertyData.thumbnail_url}
+                            alt={propertyData.name ?? "Property thumbnail"}
+                            className="h-full w-full object-cover"
+                        />
+                    </div>
+                )}
+                <Input
+                    name="thumbnail"
+                    id="thumbnail"
+                    type="file"
+                    accept="image/*"
+                    className="mt-2"
                 />
             </div>
 

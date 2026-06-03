@@ -9,6 +9,12 @@ export interface PublicUnit {
     size_sqm: number | null;
     monthly_rent: number;
     status: 'available' | 'occupied' | 'maintenance';
+    thumbnail_url?: string | null;
+    gallery?: Array<{
+        id: number;
+        url: string;
+        original_name?: string;
+    }>;
     property?: PublicProperty;
 }
 
@@ -24,6 +30,7 @@ export interface PublicProperty {
     amenities: string[] | null;
     size: number | null;
     monthly_bill?: number | null;
+    thumbnail_url?: string | null;
     // Computed by backend
     total_units?: number;
     available_units?: number;

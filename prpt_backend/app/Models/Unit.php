@@ -47,6 +47,11 @@ class Unit extends Model
         return $this->hasMany(MaintenanceRequest::class);
     }
 
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
     // Scopes
     public function scopeAvailable($query)
     {

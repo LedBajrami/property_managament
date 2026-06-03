@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Services\Auth\AuthServices;
 use App\Services\Auth\AuthServicesInterface;
+use App\Services\Application\ApplicationService;
+use App\Services\Application\ApplicationServiceInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
 use App\Services\Deposit\DepositService;
@@ -36,6 +38,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bind(UnitServiceInterface::class,UnitService::class);
         $this->app->bind(LeaseServiceInterface::class,LeaseService::class);
         $this->app->bind(DepositServiceInterface::class, DepositService::class);
+        $this->app->bind(ApplicationServiceInterface::class, ApplicationService::class);
         $this->app->bind(PublicPropertiesServiceInterface::class,PublicPropertiesService::class);
         $this->app->bind(PublicApplicationServiceInterface::class, PublicApplicationService::class);
     }

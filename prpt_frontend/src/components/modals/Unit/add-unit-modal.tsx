@@ -4,11 +4,22 @@ import { FormModal } from "@/components/form-modal.tsx";
 import { FormEvent } from "react";
 import { CreateUnitParams } from "@/types/unit";
 
-export function AddUnitModal({ open, onOpenChange, onSubmit, isPending, propertyId }: any) {
+interface AddUnitModalProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onSubmit: (data: CreateUnitParams) => void;
+    isPending: boolean;
+    isSuccess?: boolean;
+    propertyId?: number;
+}
+
+export function AddUnitModal({ open, onOpenChange, onSubmit, isPending, propertyId }: AddUnitModalProps) {
     const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const formData = new FormData(e.currentTarget);
+
+        if (!propertyId) return;
 
         const createUnitData: CreateUnitParams = {
             property_id: propertyId,
@@ -18,6 +29,10 @@ export function AddUnitModal({ open, onOpenChange, onSubmit, isPending, property
             size_sqm: formData.get("size_sqm") ? Number(formData.get("size_sqm")) : undefined,
             monthly_rent: formData.get("monthly_rent") ? Number(formData.get("monthly_rent")) : undefined,
             status: formData.get("status") as string || "available",
+            thumbnail: formData.get("thumbnail") instanceof File && (formData.get("thumbnail") as File).size > 0
+                ? formData.get("thumbnail") as File
+                : undefined,
+            gallery_photos: formData.getAll("gallery_photos").filter((file) => file instanceof File && file.size > 0) as File[],
         };
 
         onSubmit(createUnitData);
@@ -29,7 +44,7 @@ export function AddUnitModal({ open, onOpenChange, onSubmit, isPending, property
             onOpenChange={onOpenChange}
             title="Add New Unit"
             description="Create a new unit within a property."
-            onSubmit={handleFormSubmit as any}
+            onSubmit={handleFormSubmit}
             submitText="Add Unit"
             size="md"
             isSubmitting={isPending}
@@ -108,6 +123,29 @@ export function AddUnitModal({ open, onOpenChange, onSubmit, isPending, property
                         type="number"
                         step="0.01"
                         placeholder="1200.00"
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <Label htmlFor="thumbnail">Thumbnail Photo</Label>
+                    <Input
+                        name="thumbnail"
+                        id="thumbnail"
+                        type="file"
+                        accept="image/*"
+                    />
+                </div>
+
+                <div>
+                    <Label htmlFor="gallery_photos">Gallery Photos</Label>
+                    <Input
+                        name="gallery_photos"
+                        id="gallery_photos"
+                        type="file"
+                        accept="image/*"
+                        multiple
                     />
                 </div>
             </div>

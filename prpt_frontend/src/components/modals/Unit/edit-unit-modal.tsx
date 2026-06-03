@@ -2,11 +2,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormModal } from "@/components/form-modal.tsx";
 import { FormEvent } from "react";
-import { UpdateUnitParams} from "@/types/unit";
+import { Unit, UpdateUnitParams} from "@/types/unit";
 
-export function EditUnitModal({ open, onOpenChange, onSubmit, isPending, unitData }: any) {
+interface EditUnitModalProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onSubmit: (data: UpdateUnitParams) => void;
+    isPending: boolean;
+    isSuccess?: boolean;
+    unitData?: Unit;
+}
+
+export function EditUnitModal({ open, onOpenChange, onSubmit, isPending, unitData }: EditUnitModalProps) {
     const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!unitData) {
+            return;
+        }
 
         const formData = new FormData(e.currentTarget);
 
@@ -18,6 +30,10 @@ export function EditUnitModal({ open, onOpenChange, onSubmit, isPending, unitDat
             size_sqm: formData.get("size_sqm") ? Number(formData.get("size_sqm")) : undefined,
             monthly_rent: formData.get("monthly_rent") ? Number(formData.get("monthly_rent")) : undefined,
             status: formData.get("status") as string || "available",
+            thumbnail: formData.get("thumbnail") instanceof File && (formData.get("thumbnail") as File).size > 0
+                ? formData.get("thumbnail") as File
+                : undefined,
+            gallery_photos: formData.getAll("gallery_photos").filter((file) => file instanceof File && file.size > 0) as File[],
         };
 
         onSubmit(updateUnitData);
@@ -29,7 +45,7 @@ export function EditUnitModal({ open, onOpenChange, onSubmit, isPending, unitDat
             onOpenChange={onOpenChange}
             title="Edit New Unit"
             description=" "
-            onSubmit={handleFormSubmit as any}
+            onSubmit={handleFormSubmit}
             submitText="Edit Unit"
             size="md"
             isSubmitting={isPending}
@@ -114,6 +130,53 @@ export function EditUnitModal({ open, onOpenChange, onSubmit, isPending, unitDat
                         type="number"
                         step="0.01"
                         placeholder="1200.00"
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <Label htmlFor="thumbnail">Thumbnail Photo</Label>
+                    {unitData?.thumbnail_url && (
+                        <div className="mt-2 h-28 rounded-md border border-border overflow-hidden bg-muted">
+                            <img
+                                src={unitData.thumbnail_url}
+                                alt={`Unit ${unitData.unit_number} thumbnail`}
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+                    )}
+                    <Input
+                        name="thumbnail"
+                        id="thumbnail"
+                        type="file"
+                        accept="image/*"
+                        className="mt-2"
+                    />
+                </div>
+
+                <div>
+                    <Label htmlFor="gallery_photos">Gallery Photos</Label>
+                    {unitData?.gallery?.length ? (
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                            {unitData.gallery.slice(0, 6).map((photo) => (
+                                <div key={photo.id} className="h-16 rounded-md border border-border overflow-hidden bg-muted">
+                                    <img
+                                        src={photo.url}
+                                        alt={photo.original_name ?? `Unit ${unitData.unit_number} gallery`}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : null}
+                    <Input
+                        name="gallery_photos"
+                        id="gallery_photos"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="mt-2"
                     />
                 </div>
             </div>

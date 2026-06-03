@@ -34,8 +34,8 @@ const BEDROOMS = [
 ];
 
 const AVAILABILITY_COLORS: Record<string, string> = {
-    available: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    occupied: "bg-zinc-100 text-zinc-500 border-zinc-200",
+    available: "bg-primary/10 text-primary border-primary/20",
+    occupied: "bg-muted text-muted-foreground border-border",
     maintenance: "bg-yellow-100 text-yellow-700 border-yellow-200",
 };
 
@@ -64,39 +64,39 @@ export const PropertiesPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50">
+        <div className="min-h-screen bg-muted/30">
             {/* Nav */}
-            <nav className="sticky top-0 z-40 bg-white border-b border-zinc-100 px-6 py-4 flex items-center justify-between">
-                <button onClick={() => navigate("/")} className="text-xl font-bold tracking-tight text-zinc-900">
+            <nav className="sticky top-0 z-40 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
+                <button onClick={() => navigate("/")} className="text-xl font-bold tracking-tight text-foreground">
                     Havenly
                 </button>
                 <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>Sign in</Button>
-                    <Button size="sm" onClick={() => navigate("/register")}>Get started</Button>
+                    <Button variant="ghost" size="sm" onClick={() => navigate("/my-applications")}>My applications</Button>
+                    <Button size="sm" onClick={() => navigate("/register-applicant")}>Get started</Button>
                 </div>
             </nav>
 
             <div className="max-w-6xl mx-auto px-6 py-8">
                 {/* Page title */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">All properties</h1>
-                    <p className="text-zinc-500 text-sm mt-1">
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">All properties</h1>
+                    <p className="text-muted-foreground text-sm mt-1">
                         {isLoading ? "Loading..." : `${properties.length} propert${properties.length !== 1 ? "ies" : "y"} found`}
                     </p>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white border border-zinc-200 rounded-2xl p-5 mb-8 shadow-sm">
-                    <div className="flex items-center gap-2 text-sm font-medium text-zinc-700 mb-4">
+                <div className="bg-background border border-border rounded-2xl p-5 mb-8 shadow-sm">
+                    <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-4">
                         <SlidersHorizontal className="w-4 h-4" />
                         Filters
                     </div>
                     <form onSubmit={handleSearch} className="flex flex-wrap gap-3 items-end">
                         {/* Location search */}
                         <div className="flex-1 min-w-[220px]">
-                            <label className="block text-xs text-zinc-500 mb-1.5">Location</label>
+                            <label className="block text-xs text-muted-foreground mb-1.5">Location</label>
                             <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <Input
                                     className="pl-9"
                                     placeholder="City or address..."
@@ -108,7 +108,7 @@ export const PropertiesPage = () => {
 
                         {/* Property type */}
                         <div className="w-40">
-                            <label className="block text-xs text-zinc-500 mb-1.5">Type</label>
+                            <label className="block text-xs text-muted-foreground mb-1.5">Type</label>
                             <Select
                                 value={filters.property_type ?? "all"}
                                 onValueChange={(v) => updateFilter("property_type", v)}
@@ -126,7 +126,7 @@ export const PropertiesPage = () => {
 
                         {/* Bedrooms */}
                         <div className="w-36">
-                            <label className="block text-xs text-zinc-500 mb-1.5">Bedrooms</label>
+                            <label className="block text-xs text-muted-foreground mb-1.5">Bedrooms</label>
                             <Select
                                 value={filters.bedrooms?.toString() ?? "all"}
                                 onValueChange={(v) => updateFilter("bedrooms", v)}
@@ -144,7 +144,7 @@ export const PropertiesPage = () => {
 
                         {/* Min rent */}
                         <div className="w-32">
-                            <label className="block text-xs text-zinc-500 mb-1.5">Min rent</label>
+                            <label className="block text-xs text-muted-foreground mb-1.5">Min rent</label>
                             <Input
                                 type="number"
                                 placeholder="$0"
@@ -155,7 +155,7 @@ export const PropertiesPage = () => {
 
                         {/* Max rent */}
                         <div className="w-32">
-                            <label className="block text-xs text-zinc-500 mb-1.5">Max rent</label>
+                            <label className="block text-xs text-muted-foreground mb-1.5">Max rent</label>
                             <Input
                                 type="number"
                                 placeholder="Any"
@@ -164,7 +164,7 @@ export const PropertiesPage = () => {
                             />
                         </div>
 
-                        <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white h-10">
+                        <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground h-10">
                             <Search className="w-4 h-4 mr-2" />
                             Search
                         </Button>
@@ -175,13 +175,13 @@ export const PropertiesPage = () => {
                 {isLoading ? (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {[...Array(6)].map((_, i) => (
-                            <div key={i} className="bg-white rounded-2xl border border-zinc-200 h-64 animate-pulse" />
+                            <div key={i} className="bg-background rounded-2xl border border-border h-64 animate-pulse" />
                         ))}
                     </div>
                 ) : properties.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-24 text-center text-zinc-400">
+                    <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
                         <Building2 className="w-12 h-12 mb-4 opacity-25" />
-                        <p className="font-semibold text-zinc-600">No properties found</p>
+                        <p className="font-semibold text-muted-foreground">No properties found</p>
                         <p className="text-sm mt-1">Try adjusting your filters</p>
                     </div>
                 ) : (
@@ -212,16 +212,23 @@ const PropertyCard = ({
     return (
         <button
             onClick={onClick}
-            className="group text-left bg-white rounded-2xl border border-zinc-200 overflow-hidden hover:border-emerald-300 hover:shadow-md transition-all duration-200"
+            className="group text-left bg-background rounded-2xl border border-border overflow-hidden hover:border-primary hover:shadow-sm transition-all duration-200"
         >
-            {/* Placeholder image area */}
-            <div className="h-36 bg-gradient-to-br from-emerald-50 to-zinc-100 flex items-center justify-center">
-                <Building2 className="w-10 h-10 text-emerald-200" />
+            <div className="h-36 bg-gradient-to-br from-primary/10 to-muted overflow-hidden flex items-center justify-center">
+                {property.thumbnail_url ? (
+                    <img
+                        src={property.thumbnail_url}
+                        alt={property.name}
+                        className="h-full w-full object-cover"
+                    />
+                ) : (
+                    <Building2 className="w-10 h-10 text-primary/40" />
+                )}
             </div>
 
             <div className="p-5">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-semibold text-zinc-900 text-sm leading-snug group-hover:text-emerald-700 transition-colors">
+                    <h3 className="font-semibold text-foreground text-sm leading-snug group-hover:text-primary transition-colors">
                         {property.name}
                     </h3>
                     <Badge
@@ -232,31 +239,31 @@ const PropertyCard = ({
                     </Badge>
                 </div>
 
-                <div className="flex items-center gap-1 text-zinc-400 text-xs mb-3">
+                <div className="flex items-center gap-1 text-muted-foreground text-xs mb-3">
                     <MapPin className="w-3 h-3 shrink-0" />
                     <span className="truncate">{property.address}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-zinc-500">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                         <BedDouble className="w-3.5 h-3.5" />
                         {property.total_units ?? 0} unit{property.total_units !== 1 ? "s" : ""}
                         {property.property_type && (
-                            <span className="ml-2 capitalize text-zinc-400">· {property.property_type}</span>
+                            <span className="ml-2 capitalize text-muted-foreground">· {property.property_type}</span>
                         )}
                     </div>
                     {(property.min_rent || property.max_rent) && (
-                        <span className="font-semibold text-zinc-800">
+                        <span className="font-semibold text-foreground">
                             ${Number(property.min_rent).toLocaleString()}
                             {property.max_rent && property.max_rent !== property.min_rent
                                 ? ` – $${Number(property.max_rent).toLocaleString()}`
                                 : ""}
-                            <span className="font-normal text-zinc-400">/mo</span>
+                            <span className="font-normal text-muted-foreground">/mo</span>
                         </span>
                     )}
                 </div>
 
-                <div className="mt-4 flex items-center gap-1 text-emerald-600 text-xs font-medium">
+                <div className="mt-4 flex items-center gap-1 text-primary text-xs font-medium">
                     View details <ArrowRight className="w-3.5 h-3.5" />
                 </div>
             </div>

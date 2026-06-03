@@ -60,11 +60,11 @@ export const UnitDetails = () => {
     const [isAddLeaseModalOpen, setIsAddLeaseModalOpen] = useState(false);
     const [isEditLeaseModalOpen, setIsEditLeaseModalOpen] = useState(false);
     const [isRenewLeaseModalOpen, setIsRenewLeaseModalOpen] = useState(false);
-    const [selectedLease, setSelectedLease] = useState<any>(null);
+    const [selectedLease, setSelectedLease] = useState<Lease | null>(null);
     const [dateInputDialog, setDateInputDialog] = useState<{
         open: boolean;
         type: 'signed' | 'move_in' | null;
-        lease: any;
+        lease: Lease | null;
     }>({
         open: false,
         type: null,
@@ -76,7 +76,7 @@ export const UnitDetails = () => {
     const unitId = id ? Number(id) : undefined;
 
     const { data: unit } = useGetUnit(unitId);
-    const { data: leases } = useGetLeases(unitId);
+    const { data: leases } = useGetLeases(unitId ? { unit_id: unitId } : undefined);
 
     const { mutate: updateUnit, isPending: isUpdatingUnit, isSuccess: isUpdateUnitSuccess} = useUpdateUnit();
     const { mutate: createLease, isPending: isCreatingLease, isSuccess: isCreateLeaseSuccess } = useCreateLease();
@@ -114,7 +114,7 @@ export const UnitDetails = () => {
 
     const invalidateQueries = () => {
         queryClient.invalidateQueries({ queryKey: ['unit', Number(unitId)] });
-        queryClient.invalidateQueries({ queryKey: ['leases', Number(unitId)] });
+        queryClient.invalidateQueries({ queryKey: ['leases'] });
         queryClient.invalidateQueries({ queryKey: ['units'] });
         queryClient.invalidateQueries({ queryKey: ['property'] });
     };
@@ -180,7 +180,7 @@ export const UnitDetails = () => {
     const handleDateSubmit = (date: string) => {
         if (!dateInputDialog.lease) return;
 
-        const updateData: any = { lease_id: dateInputDialog.lease.id };
+        const updateData: UpdateLeaseParams = { lease_id: dateInputDialog.lease.id };
 
         if (dateInputDialog.type === 'signed') {
             updateData.signed_date = date;
@@ -196,17 +196,17 @@ export const UnitDetails = () => {
         });
     };
 
-    const openEditLeaseModal = (lease: any) => {
+    const openEditLeaseModal = (lease: Lease) => {
         setSelectedLease(lease);
         setIsEditLeaseModalOpen(true);
     };
 
-    const openRenewLeaseModal = (lease: any) => {
+    const openRenewLeaseModal = (lease: Lease) => {
         setSelectedLease(lease);
         setIsRenewLeaseModalOpen(true);
     };
 
-    const activeLease = leases?.data?.find((l: any) => l.status === "active");
+    const activeLease = leases?.data?.find((lease) => lease.status === "active");
     const isOccupied = unit?.data?.status === "occupied";
 
     return (
@@ -253,8 +253,10 @@ export const UnitDetails = () => {
                         <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
                         <div className="relative">
                             <div className="text-sm text-muted-foreground mb-1">Status</div>
-                            <Badge variant="outline" className={getUnitStatusColor(unit?.data?.status)}>
-                                {unit?.data?.status?.charAt(0).toUpperCase() + unit?.data?.status?.slice(1)}
+                            <Badge variant="outline" className={getUnitStatusColor(unit?.data?.status ?? "available")}>
+                                {unit?.data?.status
+                                    ? unit.data.status.charAt(0).toUpperCase() + unit.data.status.slice(1)
+                                    : "Available"}
                             </Badge>
                         </div>
                     </div>
@@ -264,7 +266,7 @@ export const UnitDetails = () => {
                             <div className="text-sm text-muted-foreground mb-1">Current Resident</div>
                             <div className="text-lg font-bold text-purple-600">
                                 {isOccupied && activeLease ?
-                                    `${activeLease.resident.first_name} ${activeLease.resident.last_name}` :
+                                    `${activeLease.resident?.first_name ?? ""} ${activeLease.resident?.last_name ?? ""}`.trim() || "Resident assigned" :
                                     "No resident - Unit is Available"
                                 }
                             </div>
@@ -322,7 +324,7 @@ export const UnitDetails = () => {
                                     </div>
                                     <div>
                                         <div className="text-sm text-gray-400">Monthly Rent</div>
-                                        <div className="font-medium text-white">${unit?.data?.monthly_rent.toLocaleString()}</div>
+                                        <div className="font-medium text-white">${Number(unit?.data?.monthly_rent ?? 0).toLocaleString()}</div>
                                     </div>
                                 </div>
                             </div>
@@ -343,7 +345,7 @@ export const UnitDetails = () => {
                                         <div>
                                             <div className="text-sm text-gray-400">Name</div>
                                             <div className="font-medium text-white">
-                                                {activeLease.resident.first_name} {activeLease.resident.last_name}
+                                                {activeLease.resident?.first_name ?? ""} {activeLease.resident?.last_name ?? ""}
                                             </div>
                                         </div>
                                     </div>
@@ -433,11 +435,11 @@ export const UnitDetails = () => {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    leases?.data?.map((lease: any) => (
+                                    leases?.data?.map((lease: Lease) => (
                                         <TableRow key={lease.id}>
                                             <TableCell>
                                                 <div className="font-medium">
-                                                    {lease.resident.first_name} {lease.resident.last_name}
+                                                    {lease.resident?.first_name ?? "—"} {lease.resident?.last_name ?? ""}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
@@ -447,12 +449,12 @@ export const UnitDetails = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="font-medium text-green-600">
-                                                    ${lease.monthly_rent.toLocaleString()}
+                                                    ${Number(lease.monthly_rent).toLocaleString()}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex flex-col gap-1">
-                                                    <div className="text-sm">${lease.deposit_amount.toLocaleString()}</div>
+                                                    <div className="text-sm">${Number(lease.deposit_amount).toLocaleString()}</div>
                                                     {lease.deposit_paid && (
                                                         <Badge variant="outline" className="w-fit text-xs bg-green-50 text-green-700">
                                                             Paid
@@ -573,7 +575,7 @@ export const UnitDetails = () => {
                 <AddLeaseModal
                     open={isAddLeaseModalOpen}
                     unitId={Number(unitId)}
-                    unitNumber={unit?.data?.unit_number}
+                    unitNumber={unit?.data?.unit_number ?? ""}
                     isPending={isCreatingLease}
                     isSuccess={isCreateLeaseSuccess}
                     onOpenChange={setIsAddLeaseModalOpen}

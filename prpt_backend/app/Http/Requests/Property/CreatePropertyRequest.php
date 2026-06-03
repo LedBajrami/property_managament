@@ -30,6 +30,7 @@ class CreatePropertyRequest extends FormRequest
             'parking_spaces' => 'nullable|integer',
             'year_built' => 'required|numeric',
             'description' => 'nullable|string',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ];
     }
 }

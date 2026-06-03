@@ -24,10 +24,11 @@ import {
     BedDouble, Bath, Ruler, MapPin, Building2,
     ArrowLeft, CheckCircle2, Plus, Trash2, ParkingSquare,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
-    available:   "bg-emerald-100 text-emerald-700 border-emerald-200",
-    occupied:    "bg-zinc-100 text-zinc-500 border-zinc-200",
+    available:   "bg-primary/10 text-primary border-primary/20",
+    occupied:    "bg-muted text-muted-foreground border-border",
     maintenance: "bg-yellow-100 text-yellow-700 border-yellow-200",
 };
 
@@ -40,6 +41,12 @@ const EMPLOYMENT_OPTIONS: { value: EmploymentStatus; label: string }[] = [
 ];
 
 const emptyRef = (): ApplicationReference => ({ name: "", phone: "", relationship: "" });
+
+type DetailItem = {
+    icon: LucideIcon;
+    label: string;
+    value: React.ReactNode;
+};
 
 export const UnitDetailPage = () => {
     const { id, unitId } = useParams<{ id: string; unitId: string }>();
@@ -61,11 +68,11 @@ export const UnitDetailPage = () => {
 
     if (isLoading) {
         return (
-            <PageShell onBack={() => navigate(`/properties/${id}`)}>
+            <PageShell onBack={() => navigate(`/browse/${id}`)}>
                 <div className="max-w-3xl mx-auto px-6 py-10 animate-pulse space-y-4">
-                    <div className="h-8 w-48 bg-zinc-200 rounded" />
-                    <div className="h-4 w-64 bg-zinc-100 rounded" />
-                    <div className="h-56 bg-zinc-100 rounded-2xl mt-6" />
+                    <div className="h-8 w-48 bg-muted rounded" />
+                    <div className="h-4 w-64 bg-muted rounded" />
+                    <div className="h-56 bg-muted rounded-2xl mt-6" />
                 </div>
             </PageShell>
         );
@@ -73,33 +80,63 @@ export const UnitDetailPage = () => {
 
     if (!unit) {
         return (
-            <PageShell onBack={() => navigate(`/properties/${id}`)}>
-                <div className="flex flex-col items-center justify-center py-24 text-zinc-400">
+            <PageShell onBack={() => navigate(`/browse/${id}`)}>
+                <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
                     <Building2 className="w-12 h-12 mb-4 opacity-25" />
-                    <p className="font-semibold text-zinc-600">Unit not found</p>
+                    <p className="font-semibold text-muted-foreground">Unit not found</p>
                 </div>
             </PageShell>
         );
     }
 
     const amenities: string[] = Array.isArray(unit.property?.amenities) ? unit.property!.amenities! : [];
+    const galleryPhotos = unit.gallery?.length
+        ? unit.gallery
+        : unit.thumbnail_url
+            ? [{ id: unit.id, url: unit.thumbnail_url, original_name: `Unit ${unit.unit_number} thumbnail` }]
+            : [];
 
     return (
-        <PageShell onBack={() => navigate(`/properties/${id}`)}>
+        <PageShell onBack={() => navigate(`/browse/${id}`)}>
             <div className="max-w-3xl mx-auto px-6 py-10">
+                {galleryPhotos.length > 0 && (
+                    <section className="mb-8">
+                        <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-base font-semibold text-foreground">Unit photos</h2>
+                            <span className="text-xs text-muted-foreground">
+                                {galleryPhotos.length} photo{galleryPhotos.length !== 1 ? "s" : ""}
+                            </span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {galleryPhotos.map((photo, index) => (
+                                <div
+                                    key={photo.id}
+                                    className={`${index === 0 ? "col-span-2 md:row-span-2 h-72" : "h-36"} rounded-2xl border border-border bg-muted/30 overflow-hidden`}
+                                >
+                                    <img
+                                        src={photo.url}
+                                        alt={photo.original_name ?? `Unit ${unit.unit_number} photo`}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div>
-                            <p className="text-sm text-zinc-500 mb-1 flex items-center gap-1">
+                            <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1">
                                 <Building2 className="w-3.5 h-3.5" />
                                 {unit.property?.name}
                             </p>
-                            <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">
+                            <h1 className="text-3xl font-bold text-foreground tracking-tight">
                                 Unit {unit.unit_number}
                             </h1>
                             {unit.property?.address && (
-                                <div className="flex items-center gap-1.5 text-zinc-500 text-sm mt-2">
+                                <div className="flex items-center gap-1.5 text-muted-foreground text-sm mt-2">
                                     <MapPin className="w-4 h-4 shrink-0" />
                                     {unit.property.address}
                                 </div>
@@ -115,47 +152,46 @@ export const UnitDetailPage = () => {
                 </div>
 
                 {/* Rent callout */}
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 flex items-center justify-between flex-wrap gap-4">
+                <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 mb-8 flex items-center justify-between flex-wrap gap-4">
                     <div>
-                        <p className="text-sm text-emerald-700 font-medium">Monthly rent</p>
-                        <p className="text-4xl font-bold text-emerald-800 mt-1">
+                        <p className="text-sm text-primary font-medium">Monthly rent</p>
+                        <p className="text-4xl font-bold text-primary mt-1">
                             ${Number(unit.monthly_rent).toLocaleString()}
-                            <span className="text-base font-normal text-emerald-600">/mo</span>
+                            <span className="text-base font-normal text-primary">/mo</span>
                         </p>
                     </div>
 
                     {submitted ? (
-                        <div className="flex items-center gap-2 text-emerald-700 bg-emerald-100 px-4 py-2 rounded-xl text-sm font-medium">
+                        <div className="flex items-center gap-2 text-primary bg-primary/10 px-4 py-2 rounded-xl text-sm font-medium">
                             <CheckCircle2 className="w-4 h-4" />
                             Application submitted!
                         </div>
                     ) : unit.status === "available" ? (
                         <Button
                             size="lg"
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground"
                             onClick={() => setOpen(true)}
                         >
                             Apply now
                         </Button>
                     ) : (
-                        <span className="text-sm text-zinc-400">Not available for applications</span>
+                        <span className="text-sm text-muted-foreground">Not available for applications</span>
                     )}
                 </div>
 
                 {/* Unit specs */}
                 <div className="grid sm:grid-cols-3 gap-4 mb-8">
-                    {[
+                    {([
                         { icon: BedDouble, label: "Bedrooms", value: unit.bedrooms === 0 ? "Studio" : `${unit.bedrooms} bed${unit.bedrooms !== 1 ? "s" : ""}` },
                         { icon: Bath,      label: "Bathrooms", value: `${unit.bathrooms} bath${unit.bathrooms !== 1 ? "s" : ""}` },
                         unit.size_sqm && { icon: Ruler, label: "Size", value: `${unit.size_sqm} m²` },
-                    ]
-                        .filter(Boolean)
-                        .map(({ icon: Icon, label, value }: any) => (
-                            <div key={label} className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex items-center gap-3">
-                                <Icon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    ].filter(Boolean) as DetailItem[])
+                        .map(({ icon: Icon, label, value }) => (
+                            <div key={label} className="bg-muted/30 border border-border rounded-xl p-4 flex items-center gap-3">
+                                <Icon className="w-5 h-5 text-primary shrink-0" />
                                 <div>
-                                    <p className="text-xs text-zinc-400">{label}</p>
-                                    <p className="font-semibold text-zinc-800 text-sm">{value}</p>
+                                    <p className="text-xs text-muted-foreground">{label}</p>
+                                    <p className="font-semibold text-foreground text-sm">{value}</p>
                                 </div>
                             </div>
                         ))}
@@ -164,11 +200,11 @@ export const UnitDetailPage = () => {
                 {/* Property amenities */}
                 {amenities.length > 0 && (
                     <section className="mb-8">
-                        <h2 className="text-base font-semibold text-zinc-900 mb-3">Building amenities</h2>
+                        <h2 className="text-base font-semibold text-foreground mb-3">Building amenities</h2>
                         <div className="flex flex-wrap gap-2">
                             {amenities.map((a) => (
-                                <span key={a} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-600">
-                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                <span key={a} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/30 border border-border text-xs text-muted-foreground">
+                                    <CheckCircle2 className="w-3 h-3 text-primary" />
                                     {a}
                                 </span>
                             ))}
@@ -179,18 +215,17 @@ export const UnitDetailPage = () => {
                 {/* Property details */}
                 {unit.property && (
                     <section>
-                        <h2 className="text-base font-semibold text-zinc-900 mb-3">Property info</h2>
+                        <h2 className="text-base font-semibold text-foreground mb-3">Property info</h2>
                         <div className="grid sm:grid-cols-2 gap-3">
-                            {[
+                            {([
                                 unit.property.property_type && { icon: Building2, label: "Type", value: unit.property.property_type },
                                 unit.property.parking_spaces != null && { icon: ParkingSquare, label: "Parking", value: `${unit.property.parking_spaces} space${unit.property.parking_spaces !== 1 ? "s" : ""}` },
-                            ]
-                                .filter(Boolean)
-                                .map(({ icon: Icon, label, value }: any) => (
-                                    <div key={label} className="flex items-center gap-3 text-sm p-3 rounded-xl bg-zinc-50 border border-zinc-100">
-                                        <Icon className="w-4 h-4 text-zinc-400 shrink-0" />
-                                        <span className="text-zinc-500">{label}</span>
-                                        <span className="ml-auto font-medium text-zinc-800 capitalize">{value}</span>
+                            ].filter(Boolean) as DetailItem[])
+                                .map(({ icon: Icon, label, value }) => (
+                                    <div key={label} className="flex items-center gap-3 text-sm p-3 rounded-xl bg-muted/30 border border-border">
+                                        <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
+                                        <span className="text-muted-foreground">{label}</span>
+                                        <span className="ml-auto font-medium text-foreground capitalize">{value}</span>
                                     </div>
                                 ))}
                         </div>
@@ -244,7 +279,7 @@ const ApplicationModal = ({
     });
     const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
 
-    const set = (key: keyof FormState, value: any) => {
+    const set = (key: keyof FormState, value: FormState[keyof FormState]) => {
         setForm((f) => ({ ...f, [key]: value }));
         setErrors((e) => ({ ...e, [key]: undefined }));
     };
@@ -348,24 +383,24 @@ const ApplicationModal = ({
                     {/* References */}
                     <div>
                         <div className="flex items-center justify-between mb-3">
-                            <label className="text-sm font-medium text-zinc-700">
-                                References <span className="text-zinc-400 font-normal">(optional)</span>
+                            <label className="text-sm font-medium text-foreground">
+                                References <span className="text-muted-foreground font-normal">(optional)</span>
                             </label>
                             {form.references.length < 5 && (
                                 <button
                                     type="button"
                                     onClick={addRef}
-                                    className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+                                    className="flex items-center gap-1 text-xs text-primary hover:text-primary font-medium"
                                 >
                                     <Plus className="w-3.5 h-3.5" /> Add reference
                                 </button>
                             )}
                         </div>
                         {form.references.map((ref, i) => (
-                            <div key={i} className="border border-zinc-200 rounded-xl p-4 mb-3 space-y-3">
+                            <div key={i} className="border border-border rounded-xl p-4 mb-3 space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs font-medium text-zinc-500">Reference {i + 1}</span>
-                                    <button type="button" onClick={() => removeRef(i)} className="text-zinc-300 hover:text-red-400 transition-colors">
+                                    <span className="text-xs font-medium text-muted-foreground">Reference {i + 1}</span>
+                                    <button type="button" onClick={() => removeRef(i)} className="text-muted-foreground hover:text-red-400 transition-colors">
                                         <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
@@ -388,7 +423,7 @@ const ApplicationModal = ({
                         <Button
                             onClick={handleSubmit}
                             disabled={isPending}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground"
                         >
                             {isPending ? "Submitting..." : "Submit application"}
                         </Button>
@@ -402,13 +437,13 @@ const ApplicationModal = ({
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
 const PageShell = ({ children, onBack }: { children: React.ReactNode; onBack: () => void }) => (
-    <div className="min-h-screen bg-white">
-        <nav className="sticky top-0 z-40 bg-white border-b border-zinc-100 px-6 py-4 flex items-center gap-4">
-            <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors">
+    <div className="min-h-screen bg-background">
+        <nav className="sticky top-0 z-40 bg-background border-b border-border px-6 py-4 flex items-center gap-4">
+            <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
                 <ArrowLeft className="w-4 h-4" />
                 Back
             </button>
-            <span className="text-xl font-bold tracking-tight text-zinc-900 ml-auto">Havenly</span>
+            <span className="text-xl font-bold tracking-tight text-foreground ml-auto">Havenly</span>
         </nav>
         {children}
     </div>
@@ -424,7 +459,7 @@ const Field = ({
     children: React.ReactNode;
 }) => (
     <div>
-        <label className="block text-sm font-medium text-zinc-700 mb-1.5">{label}</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">{label}</label>
         {children}
         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>

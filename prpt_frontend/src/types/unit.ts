@@ -9,6 +9,12 @@ export interface Unit {
     size_sqm?: number;
     monthly_rent?: number;
     status?: string;
+    thumbnail_url?: string | null;
+    gallery?: Array<{
+        id: number;
+        url: string;
+        original_name?: string;
+    }>;
     property?: {
         id: number;
         name: string;
@@ -27,6 +33,8 @@ export interface CreateUnitParams {
     size_sqm?: number;
     monthly_rent?: number;
     status?: string;
+    thumbnail?: File;
+    gallery_photos?: File[];
 }
 
 
@@ -37,7 +45,9 @@ export interface UpdateUnitParams {
     bathrooms?: number;
     size_sqm?: number;
     monthly_rent?: number;
-    status?: string | any;
+    status?: string;
+    thumbnail?: File;
+    gallery_photos?: File[];
 }
 
 export interface CreateUnitResponse {

@@ -13,7 +13,7 @@ class EnsureUserBelongsToCompany
         $user = auth()->user();
 
         // Applicants are not tied to a company — let them through immediately
-        if ($user->role === 'applicant') {
+        if ($user->hasRole('applicant')) {
             return $next($request);
         }
 

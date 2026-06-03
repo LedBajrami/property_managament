@@ -9,10 +9,10 @@ function fmt(n: number) {
 
 function groupByProperty(schedules: PaymentSchedule[]) {
     const map: Record<number, {
-        property: { id: number; name: string; address: string };
+        property: NonNullable<NonNullable<PaymentSchedule["unit"]>["property"]>;
         units: Record<number, {
-            unit: { id: number; unit_number: string };
-            resident: PaymentSchedule["resident"];
+            unit: NonNullable<PaymentSchedule["unit"]>;
+            resident: NonNullable<PaymentSchedule["resident"]>;
             schedules: PaymentSchedule[];
         }>;
     }> = {};
@@ -20,11 +20,16 @@ function groupByProperty(schedules: PaymentSchedule[]) {
     for (const s of schedules) {
         const pid = s.unit?.property?.id;
         const uid = s.unit?.id;
+        const property = s.unit?.property;
+        const unit = s.unit;
+        const resident = s.resident;
 
-        if (!pid || !uid) return;
+        if (!pid || !uid || !property || !unit || !resident) {
+            continue;
+        }
 
-        if (!map[pid]) map[pid] = { property: s.unit?.property, units: {} };
-        if (!map[pid].units[uid]) map[pid].units[uid] = { unit: s.unit, resident: s.resident, schedules: [] };
+        if (!map[pid]) map[pid] = { property, units: {} };
+        if (!map[pid].units[uid]) map[pid].units[uid] = { unit, resident, schedules: [] };
         map[pid].units[uid].schedules.push(s);
     }
     return Object.values(map);

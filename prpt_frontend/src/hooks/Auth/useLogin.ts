@@ -13,6 +13,7 @@ export const useLogin = () => {
         onSuccess: (response) => {
             // Store token and user in localStorage
             localStorage.setItem('token', response.data.token.access_token);
+            localStorage.removeItem('current_company_id');
 
 
             // Update the auth query cache
@@ -23,7 +24,9 @@ export const useLogin = () => {
 
             // Handle navigation based on company count
 
-            if (response.data.user.companies.length > 1) {
+            if (response.data.user.role === 'applicant') {
+                navigate('/browse');
+            } else if (response.data.user.companies.length > 1) {
                 navigate('/select-company');
             } else if (response.data.user.companies.length === 1) {
                 localStorage.setItem('current_company_id', response.data.user.companies[0].id.toString());
@@ -33,7 +36,7 @@ export const useLogin = () => {
                 navigate('/login');
             }
         },
-        onError: (error: any) => {
+        onError: (error) => {
             toast.error('Login failed', {
                 description: error?.message || 'Please check your credentials',
             });

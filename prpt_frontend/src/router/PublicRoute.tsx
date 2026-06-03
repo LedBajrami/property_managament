@@ -7,7 +7,7 @@ interface PublicRouteProps {
 }
 
 const PublicRoute = ({ children }: PublicRouteProps) => {
-    const { isLoading, isAuthenticated } = useAuth();
+    const { user, isLoading, isAuthenticated } = useAuth();
 
     if (isLoading) {
         return <LoaderPinwheel
@@ -21,7 +21,14 @@ const PublicRoute = ({ children }: PublicRouteProps) => {
     }
 
     if (isAuthenticated) {
-        return <Navigate to="/dashboard" replace />;
+        if (user?.role === "applicant") {
+            return <Navigate to="/browse" replace />;
+        }
+
+        const hasMultipleCompanies = (user?.companies?.length ?? 0) > 1;
+        const hasSelectedCompany = !!localStorage.getItem('current_company_id');
+
+        return <Navigate to={hasMultipleCompanies && !hasSelectedCompany ? "/select-company" : "/dashboard"} replace />;
     }
 
     return <>{children}</>;

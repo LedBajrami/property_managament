@@ -28,6 +28,9 @@ class UpdateUnitRequest extends FormRequest
             'size_sqm' => 'required|numeric',
             'monthly_rent' => 'required|numeric',
             'status' => 'required|string',
+            'thumbnail' => 'nullable|image|max:5120',
+            'gallery_photos' => 'nullable|array',
+            'gallery_photos.*' => 'image|max:5120',
         ];
     }
 }

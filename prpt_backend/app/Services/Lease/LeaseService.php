@@ -5,6 +5,7 @@ namespace App\Services\Lease;
 use App\Http\Resources\Lease\LeaseResource;
 use App\Models\Lease;
 use App\Models\PaymentSchedule;
+use App\Models\Unit;
 use App\Notifications\Lease\SendLeaseActivatedNotification;
 use App\Traits\ApiTrait;
 use Carbon\Carbon;
@@ -19,12 +20,15 @@ class LeaseService implements LeaseServiceInterface
     {
         try {
             $user = Auth::user();
-            $query = Lease::with('resident');
+            $query = Lease::with(['resident', 'unit.property', 'documents']);
 
-            if ($user->role === 'resident') {
+            if ($user->hasRole('resident')) {
                 // Residents only see their own leases
                 $query->where('resident_id', $user->id);
             } else {
+                $company = app('current_company');
+                $query->where('company_id', $company->id);
+
                 // Admins filter by unit if provided
                 if ($unitId = $request->input('unit_id')) {
                     $query->where('unit_id', $unitId);
@@ -43,7 +47,7 @@ class LeaseService implements LeaseServiceInterface
     public function getLease($lease)
     {
         try {
-            return $this->success(new LeaseResource($lease));
+            return $this->success(new LeaseResource($lease->load(['resident', 'unit.property', 'documents'])));
         } catch (\Throwable $th) {
             return $this->error($th);
         }
@@ -81,10 +85,12 @@ class LeaseService implements LeaseServiceInterface
 
     public function editLease($lease, $request)
     {
+        DB::beginTransaction();
         try {
             $data = $request->validated();
 
             if ($lease->status === 'terminated') {
+                DB::rollBack();
                 return $this->error("This lease has already been terminated");
             }
 
@@ -93,6 +99,19 @@ class LeaseService implements LeaseServiceInterface
                 return $value !== null;
             });
 
+            $unitId = $updateData['unit_id'] ?? $lease->unit_id;
+            $willActivate = array_key_exists('move_in_date', $updateData) && $lease->status === 'draft';
+
+            if ($willActivate && $this->unitHasAnotherActiveLease($unitId, $lease->id)) {
+                DB::rollBack();
+                return $this->error('This unit already has an active lease. Terminate or expire the current active lease before activating another one.', 422);
+            }
+
+            if ($lease->status === 'active' && isset($updateData['unit_id']) && $this->unitHasAnotherActiveLease($unitId, $lease->id)) {
+                DB::rollBack();
+                return $this->error('The selected unit already has an active lease.', 422);
+            }
+
             $lease->update($updateData);
 
             // Auto-activate if move_in_date is set and status is draft
@@ -100,11 +119,14 @@ class LeaseService implements LeaseServiceInterface
                 $this->activateLease($lease);
             }
 
+            DB::commit();
+
             return $this->success(
                 new LeaseResource($lease->fresh()),
                 'Lease updated successfully'
             );
         } catch (\Throwable $th) {
+            DB::rollBack();
             return $this->error($th->getMessage());
         }
     }
@@ -146,6 +168,10 @@ class LeaseService implements LeaseServiceInterface
 
     private function activateLease(Lease $lease)
     {
+        if ($this->unitHasAnotherActiveLease($lease->unit_id, $lease->id)) {
+            throw new \RuntimeException('This unit already has an active lease.');
+        }
+
         // Update lease status
         $lease->update(['status' => 'active']);
 
@@ -157,6 +183,17 @@ class LeaseService implements LeaseServiceInterface
 
         // Send notification
         $lease->resident->notify(new SendLeaseActivatedNotification($lease));
+    }
+
+    private function unitHasAnotherActiveLease(int $unitId, int $excludeLeaseId): bool
+    {
+        Unit::whereKey($unitId)->lockForUpdate()->first();
+
+        return Lease::where('unit_id', $unitId)
+            ->where('status', 'active')
+            ->where('id', '!=', $excludeLeaseId)
+            ->lockForUpdate()
+            ->exists();
     }
 
     private function generatePaymentSchedules(Lease $lease)

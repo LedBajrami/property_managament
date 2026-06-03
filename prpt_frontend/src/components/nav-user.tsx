@@ -49,6 +49,7 @@ export function NavUser({
         onSuccess: () => {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            localStorage.removeItem('current_company_id');
 
             navigate('/login');
         },

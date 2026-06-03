@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/layouts/admin-layout.tsx";
 import { useGetLease } from "@/hooks/Leases/useGetLease.ts";
 import { useAuth } from "@/hooks/Auth/useAuth.ts";
+import { useDownloadDocument } from "@/hooks/Document/useDownloadDocument.ts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,10 +12,13 @@ import {
     ArrowLeft,
     Building2,
     Calendar,
+    Download,
     DollarSign,
     Home,
+    History,
     User,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const STATUS_COLORS: Record<string, string> = {
     active:     "bg-emerald-100 text-emerald-700 border-emerald-200",
@@ -25,6 +29,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 const canManageDeposits = (role?: string) =>
     role === "company-admin" || role === "property-manager" || role === "super-admin";
+
+const canManageLeases = canManageDeposits;
 
 const fmt = (d?: string) => (d ? format(new Date(d), "MMM d, yyyy") : "—");
 
@@ -42,6 +48,7 @@ export const LeaseDetail = () => {
     const leaseId   = id ? parseInt(id) : undefined;
 
     const { data, isLoading } = useGetLease(leaseId);
+    const { mutate: downloadDocument, isPending: isDownloadingDocument } = useDownloadDocument();
     const lease = data?.data;
 
     if (isLoading) {
@@ -68,6 +75,22 @@ export const LeaseDetail = () => {
     const residentName = lease.resident
         ? `${lease.resident.first_name} ${lease.resident.last_name}`
         : "—";
+    const leaseDocument = lease.documents?.find((document) => document.document_type === "lease_agreement")
+        ?? lease.documents?.[0];
+
+    const handleDownloadLeaseDocument = () => {
+        if (!leaseDocument) return;
+
+        downloadDocument(
+            {
+                documentId: leaseDocument.id,
+                filename: leaseDocument.original_name ?? `Lease-${lease.id}.pdf`,
+            },
+            {
+                onError: () => toast.error("Failed to download lease document"),
+            }
+        );
+    };
 
     return (
         <AdminLayout>
@@ -97,6 +120,27 @@ export const LeaseDetail = () => {
                         >
                             {lease.status}
                         </Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mt-4">
+                        {leaseDocument && (
+                            <Button
+                                variant="outline"
+                                onClick={handleDownloadLeaseDocument}
+                                disabled={isDownloadingDocument}
+                            >
+                                <Download className="w-4 h-4 mr-2" />
+                                Download Lease
+                            </Button>
+                        )}
+                        {canManageLeases(user?.role) && lease.unit_id && (
+                            <Button
+                                variant="outline"
+                                onClick={() => navigate(`/unit/${lease.unit_id}/leases`)}
+                            >
+                                <History className="w-4 h-4 mr-2" />
+                                Unit Lease History
+                            </Button>
+                        )}
                     </div>
                 </div>
 

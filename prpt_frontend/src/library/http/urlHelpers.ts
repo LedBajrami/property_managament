@@ -29,11 +29,12 @@ export const LEASE = "/lease"
 // Payment
 export const PAYMENT_SCHEDULE = "/payment-schedule"
 export const DOCUMENT = "/document"
+export const DOCUMENTS = "/documents"
+export const APPLICATIONS = "/applications"
+export const DASHBOARD_OVERVIEW = "/dashboard/overview"
 
 export const PUBLIC_PROPERTIES  = '/public/properties';
 export const PUBLIC_APPLICATIONS = '/public/applications';
-
-
 
 
 

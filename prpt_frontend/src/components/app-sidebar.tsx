@@ -22,7 +22,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import {useAuth} from "@/hooks/Auth/useAuth.ts";
-import {Building2, CreditCard, FileChartColumn, FileText, FolderKanban, Users} from "lucide-react";
+import {Building2, ClipboardList, CreditCard, FileChartColumn, FileText, FolderKanban, Users} from "lucide-react";
 import {Link} from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -56,6 +56,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: FileText,
         },
         {
+            title: "Applications",
+            url: "/applications",
+            icon: ClipboardList,
+        },
+        {
             title: "Payments",
             url: "/payments",
             icon: CreditCard,
@@ -72,6 +77,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Dashboard",
             url: "/dashboard",
             icon: IconDashboard,
+        },
+        {
+            title: "Leases",
+            url: "/leases",
+            icon: FileText,
         },
     ];
 

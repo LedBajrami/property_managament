@@ -10,6 +10,11 @@ class PropertyResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $photos = $this->relationLoaded('documents')
+            ? $this->documents->where('document_type', 'property_photo')->values()
+            : collect();
+        $thumbnail = $photos->first();
+
         return [
             'id' => $this->id,
             'company_id' => $this->company_id,
@@ -22,6 +27,7 @@ class PropertyResource extends JsonResource
             'amenities' => $this->amenities,
             'size' => $this->size,
             'monthly_bill' => $this->monthly_bill,
+            'thumbnail_url' => $thumbnail ? url('/api/public/documents/' . $thumbnail->id . '/view') : null,
 
             // Units stats (computed from eager-loaded relation)
             'units' => UnitResource::collection($this->whenLoaded('units')),            'total_units' => $this->units->count(),

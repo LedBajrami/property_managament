@@ -5,7 +5,15 @@ import { CreatePropertyParams } from "@/types/property";
 import { FormModal } from "@/components/form-modal.tsx";
 import {FormEvent} from "react";
 
-export function AddPropertyModal({ open, onOpenChange, onSubmit, isPending }: any) {
+interface AddPropertyModalProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onSubmit: (data: CreatePropertyParams) => void;
+    isPending: boolean;
+    isSuccess?: boolean;
+}
+
+export function AddPropertyModal({ open, onOpenChange, onSubmit, isPending }: AddPropertyModalProps) {
 
     const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -21,6 +29,9 @@ export function AddPropertyModal({ open, onOpenChange, onSubmit, isPending }: an
             year_built: formData.get("year_built") ? Number(formData.get("year_built")) : undefined,
             parking_spaces: formData.get("parking_spaces") ? Number(formData.get("parking_spaces")) : 0,
             description: formData.get("description") as string || undefined,
+            thumbnail: formData.get("thumbnail") instanceof File && (formData.get("thumbnail") as File).size > 0
+                ? formData.get("thumbnail") as File
+                : undefined,
         };
 
         onSubmit(createPropertyData);
@@ -32,7 +43,7 @@ export function AddPropertyModal({ open, onOpenChange, onSubmit, isPending }: an
             onOpenChange={onOpenChange}
             title="Add New Property"
             description=""
-            onSubmit={handleFormSubmit as any}
+            onSubmit={handleFormSubmit}
             submitText="Add Property"
             size="md"
             isSubmitting={isPending}
@@ -117,6 +128,17 @@ export function AddPropertyModal({ open, onOpenChange, onSubmit, isPending }: an
                     type="number"
                     placeholder="20"
                     min="0"
+                />
+            </div>
+
+            <div className="col-span-2">
+                <Label htmlFor="thumbnail">Thumbnail Photo</Label>
+                <Input
+                    name="thumbnail"
+                    id="thumbnail"
+                    type="file"
+                    accept="image/*"
+                    className="mt-2"
                 />
             </div>
 

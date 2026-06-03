@@ -13,8 +13,18 @@ class DocumentController extends Controller
     {
     }
 
+    public function index()
+    {
+        return $this->documentService->list();
+    }
+
     public function download(Document $document)
     {
         return $this->documentService->download($document);
+    }
+
+    public function viewPublicPhoto(Document $document)
+    {
+        return $this->documentService->viewPublicPhoto($document);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\Public\Resident\Properties;
 
 use App\Http\Resources\Property\PropertyResource;
+use App\Http\Resources\Unit\UnitResource;
 use App\Models\Property;
 use App\Models\Unit;
 use App\Traits\ApiTrait;
@@ -16,7 +17,9 @@ class PublicPropertiesService implements PublicPropertiesServiceInterface
         try {
             $query = Property::query()
                 ->with([
+                    'documents',
                     'units:id,property_id,unit_number,bedrooms,bathrooms,size_sqm,monthly_rent,status',
+                    'units.documents',
                 ]);
 
             // Filter: location
@@ -81,7 +84,9 @@ class PublicPropertiesService implements PublicPropertiesServiceInterface
     {
         try {
             $property = Property::with([
+                'documents',
                 'units:id,property_id,unit_number,bedrooms,bathrooms,size_sqm,monthly_rent,status',
+                'units.documents',
             ])
                 ->select(
                     'id',
@@ -114,7 +119,9 @@ class PublicPropertiesService implements PublicPropertiesServiceInterface
     {
         try {
             $unit = Unit::with([
+                'documents',
                 'property' => fn($q) => $q->select('id', 'name', 'address', 'property_type', 'amenities', 'parking_spaces'),
+                'property.documents',
             ])
                 ->where('property_id', $propertyId)
                 ->find($unitId);
@@ -123,7 +130,7 @@ class PublicPropertiesService implements PublicPropertiesServiceInterface
                 return $this->error('Unit not found', 404);
             }
 
-            return $this->success($unit);
+            return $this->success(new UnitResource($unit));
         } catch (\Exception $e) {
             return $this->error($e);
         }

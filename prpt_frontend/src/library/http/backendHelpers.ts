@@ -1,6 +1,6 @@
-import {del, get, post, put} from "./apiHelpers";
+import {del, get, post, postUpload, put, putFormData} from "./apiHelpers";
 import * as url from './urlHelpers';
-import {LoginData, RegisterApplicantData, ResetPasswordParams} from "@/types/auth.ts";
+import {AuthResponse, LoginData, RegisterApplicantData, ResetPasswordParams} from "@/types/auth.ts";
 import {CreateUserParams, UpdateUserParams} from "@/types/user.ts";
 import {CreateCompany} from "@/types/company.ts";
 import {CreatePropertyParams, UpdatePropertyParams} from "@/types/property.ts";
@@ -10,14 +10,13 @@ import {PaymentScheduleFilters, RecordPaymentParams} from "@/types/payment.ts";
 import {downloadFile} from "./apiHelpers";
 import {RecordDepositPaidParams, RecordDepositReturnParams} from "@/types/deposit.ts";
 import {PropertyFilters, SubmitApplicationParams} from "@/types/publicProperty.ts";
+import {ApplicationFilters, ApproveApplicationParams, RejectApplicationParams} from "@/types/application.ts";
 
-
-
-// @ts-ignore
-const loginRequest = (data: LoginData) => post(url.LOGIN, data, { skipSuccessNotification: true });
+const loginRequest = (data: LoginData) =>
+    post(url.LOGIN, data, { skipSuccessNotification: true } as unknown as Parameters<typeof post>[2]);
 const resendSetPasswordLink = (id: string | undefined) => post(`${url.RESEND_SET_PASSWORD_LINK}/${id}`, {});
 const forgotPasswordEmail = (data: { email: string }) => post(url.FORGOT_PASSWORD_EMAIL, data);
-const getUserState = () => get(url.USER_STATE).then((res: any) => res.data.user);
+const getUserState = () => get<{ data: { user: AuthResponse } }>(url.USER_STATE).then((res) => res.data.user);
 
 const registerApplicant = (data: RegisterApplicantData) => post('/register-applicant', data);
 
@@ -47,11 +46,38 @@ const getProperties = () => get(url.PROPERTY);
 
 const getProperty = (propertyId?: number) => get(`${url.PROPERTY}/${propertyId}`);
 
-const createProperty = (data: CreatePropertyParams) => post(url.PROPERTY, data);
+const appendValue = (formData: FormData, key: string, value: unknown) => {
+    if (value === undefined || value === null) return;
+
+    if (value instanceof File) {
+        formData.append(key, value, value.name);
+    } else if (Array.isArray(value)) {
+        value.forEach((item) => appendValue(formData, `${key}[]`, item));
+    } else {
+        formData.append(key, String(value));
+    }
+};
+
+const toFormData = (data: Record<string, unknown>) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => appendValue(formData, key, value));
+    return formData;
+};
+
+const toPutFormData = (data: Record<string, unknown>) => {
+    const formData = toFormData(data);
+    formData.append("_method", "PUT");
+    return formData;
+};
+
+const createProperty = (data: CreatePropertyParams) =>
+    postUpload(url.PROPERTY, toFormData(data as unknown as Record<string, unknown>));
 
 const editProperty = (data: UpdatePropertyParams) => {
     const { property_id, ...updateData } = data;
-    return put(`${url.PROPERTY}/${property_id}`, updateData);
+    return updateData.thumbnail
+        ? putFormData(`${url.PROPERTY}/${property_id}`, updateData as unknown as Record<string, unknown>)
+        : put(`${url.PROPERTY}/${property_id}`, updateData);
 };
 
 const deleteProperty = (propertyId: number) => del(`${url.PROPERTY}/${propertyId}`);
@@ -62,11 +88,14 @@ const getUnits = (propertyId?: number) => get(`${url.UNIT}?property_id=${propert
 
 const getUnit = (unitId?: number) => get(`${url.UNIT}/${unitId}`);
 
-const createUnit = (data: CreateUnitParams) => post(url.UNIT, data);
+const createUnit = (data: CreateUnitParams) =>
+    postUpload(url.UNIT, toFormData(data as unknown as Record<string, unknown>));
 
 const editUnit = (data: UpdateUnitParams) => {
     const { unit_id, ...updateData } = data;
-    return put(`${url.UNIT}/${unit_id}`, updateData);
+    return updateData.thumbnail || updateData.gallery_photos?.length
+        ? postUpload(`${url.UNIT}/${unit_id}`, toPutFormData(updateData as unknown as Record<string, unknown>))
+        : put(`${url.UNIT}/${unit_id}`, updateData);
 };
 
 const deleteUnit = (unitId: number) => del(`${url.UNIT}/${unitId}`);
@@ -132,6 +161,13 @@ const recordPayment = (scheduleId: number, data: RecordPaymentParams) =>
 const downloadReceipt = (documentId: number, filename: string) =>
     downloadFile(`${url.DOCUMENT}/${documentId}/download`, {}, filename);
 
+const downloadDocument = (documentId: number, filename: string) =>
+    downloadFile(`${url.DOCUMENT}/${documentId}/download`, {}, filename);
+
+const getDocuments = () => get(url.DOCUMENTS);
+
+const getDashboardOverview = () => get(url.DASHBOARD_OVERVIEW);
+
 // //Roles
 // const getRoles = (filters) => get(url.GET_ROLES, filters);
 // const getRole = (role_id) => get(url.GET_ROLES + '/' + role_id);
@@ -173,6 +209,26 @@ export const submitApplication = (data: SubmitApplicationParams) =>
 
 export const getMyApplications = () =>
     get(`${url.PUBLIC_APPLICATIONS}/mine`);
+
+// ─── Internal Application Review
+const buildApplicationQuery = (filters?: ApplicationFilters) => {
+    const params = new URLSearchParams();
+    if (filters?.status && filters.status !== "all") params.append("status", filters.status);
+    const query = params.toString();
+    return query ? `?${query}` : "";
+};
+
+const getApplications = (filters?: ApplicationFilters) =>
+    get(`${url.APPLICATIONS}${buildApplicationQuery(filters)}`);
+
+const getApplication = (applicationId: number) =>
+    get(`${url.APPLICATIONS}/${applicationId}`);
+
+const approveApplication = (applicationId: number, data: ApproveApplicationParams) =>
+    post(`${url.APPLICATIONS}/${applicationId}/approve`, data);
+
+const rejectApplication = (applicationId: number, data: RejectApplicationParams) =>
+    post(`${url.APPLICATIONS}/${applicationId}/reject`, data);
 
 
 export {
@@ -239,4 +295,12 @@ export {
     getMyPaymentSchedules,
     recordPayment,
     downloadReceipt,
+    downloadDocument,
+    getDocuments,
+    getDashboardOverview,
+
+    getApplications,
+    getApplication,
+    approveApplication,
+    rejectApplication,
 }

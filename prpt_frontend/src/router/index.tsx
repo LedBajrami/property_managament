@@ -22,6 +22,11 @@ import { LandingPage } from "@/pages/Public/LandingPage";
 import { PropertiesPage } from "@/pages/Public/Property";
 import { PropertyDetailPage } from "@/pages/Public/Property/PropertyDetails";
 import { UnitDetailPage } from "@/pages/Public/Unit/UnitDetails";
+import ApplicationsPage from "@/pages/Applications";
+import MyApplicationsPage from "@/pages/Public/MyApplications";
+import ReportsPage from "@/pages/Reports";
+import DocumentsPage from "@/pages/Documents";
+import SettingsPage from "@/pages/Settings";
 
 export const router = createBrowserRouter([
     {
@@ -29,23 +34,42 @@ export const router = createBrowserRouter([
         element: <App />,
         children: [
 
-            // ─── Public browsing (accessible by anyone: guests AND logged-in users) ──
-            // These must come BEFORE the auth-gated /properties routes.
+            // ─── Public landing ──────────────────────────────────────────────────────
             {
                 path: '/',
                 element: <LandingPage />,
             },
             {
                 path: '/browse',
-                element: <PropertiesPage />,
+                element: (
+                    <ProtectedRoute>
+                        <PropertiesPage />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: '/browse/:id',
-                element: <PropertyDetailPage />,
+                element: (
+                    <ProtectedRoute>
+                        <PropertyDetailPage />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: '/browse/:id/units/:unitId',
-                element: <UnitDetailPage />,
+                element: (
+                    <ProtectedRoute>
+                        <UnitDetailPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/my-applications',
+                element: (
+                    <ProtectedRoute allowedRoles={["applicant", "resident"]}>
+                        <MyApplicationsPage />
+                    </ProtectedRoute>
+                ),
             },
 
             // ─── Auth pages (guests only — redirect to /dashboard if logged in) ──────
@@ -162,7 +186,7 @@ export const router = createBrowserRouter([
             {
                 path: '/leases',
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["company-admin", "property-manager", "super-admin", "resident"]}>
                         <Leases />
                     </ProtectedRoute>
                 ),
@@ -170,8 +194,18 @@ export const router = createBrowserRouter([
             {
                 path: '/leases/:id',
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["company-admin", "property-manager", "super-admin", "resident"]}>
                         <LeaseDetail />
+                    </ProtectedRoute>
+                ),
+            },
+
+            // ─── Protected: Applications ──────────────────────────────────────────────
+            {
+                path: '/applications',
+                element: (
+                    <ProtectedRoute allowedRoles={["company-admin", "property-manager", "super-admin"]}>
+                        <ApplicationsPage />
                     </ProtectedRoute>
                 ),
             },
@@ -190,6 +224,32 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <PaymentOverviewPage />
+                    </ProtectedRoute>
+                ),
+            },
+
+            // ─── Protected: Documents, Reports, Settings ─────────────────────────────
+            {
+                path: '/documents',
+                element: (
+                    <ProtectedRoute allowedRoles={["company-admin", "property-manager", "super-admin", "resident"]}>
+                        <DocumentsPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/reports',
+                element: (
+                    <ProtectedRoute allowedRoles={["company-admin", "property-manager", "super-admin"]}>
+                        <ReportsPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/settings',
+                element: (
+                    <ProtectedRoute>
+                        <SettingsPage />
                     </ProtectedRoute>
                 ),
             },

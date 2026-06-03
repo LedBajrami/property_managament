@@ -11,6 +11,8 @@ use App\Http\Controllers\Lease\LeaseController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Document\DocumentController;
 use App\Http\Controllers\Deposit\DepositController;
+use App\Http\Controllers\Application\ApplicationController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Public\PublicPropertyController;
 use App\Http\Controllers\Public\PublicApplicationController;
 
@@ -32,6 +34,7 @@ Route::prefix('public')->group(function () {
     Route::get('properties', [PublicPropertyController::class, 'getPublicProperties']);
     Route::get('properties/{id}', [PublicPropertyController::class, 'getPublicProperty']);
     Route::get('properties/{propertyId}/units/{unitId}', [PublicPropertyController::class, 'getPublicPropertyUnit']);
+    Route::get('documents/{document}/view', [DocumentController::class, 'viewPublicPhoto']);
 
 });
 
@@ -40,6 +43,8 @@ Route::middleware('auth:api')->get('user-state', [UserController::class, 'user_s
 
 Route::middleware(['auth:api', 'company.scope'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
+
+    Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('can:view-reports');
 
     // User management
     Route::middleware('throttle:userManagement')->group(function () {
@@ -78,16 +83,24 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
         Route::get('', [LeaseController::class, 'getLeases'])->middleware('can:view-leases');
         Route::get('/{lease}', [LeaseController::class, 'getLease'])->middleware(['can:view-leases', 'can:view,lease']);
         Route::post('', [LeaseController::class, 'createLease'])->middleware('can:create-leases');
-        Route::put('/{lease}', [LeaseController::class, 'editLease'])->middleware(['can:edit-leases', ]);
+        Route::put('/{lease}', [LeaseController::class, 'editLease'])->middleware(['can:edit-leases', 'can:update,lease']);
         Route::get('/terminate-lease/{lease}', [LeaseController::class, 'terminateLease'])->middleware('can:terminate-leases');
         Route::post('/renew-lease/{leaseId}', [LeaseController::class, 'renewLease'])->middleware('can:terminate-leases');
     });
 
     // Deposit management
     Route::prefix('lease/{lease}/deposit')->middleware('throttle:paymentManagement')->group(function () {
-        Route::get('', [DepositController::class, 'getSummary'])->middleware('can:view-payments');
-        Route::post('record-paid', [DepositController::class, 'recordPaid'])->middleware('can:record-payments');
-        Route::post('record-return', [DepositController::class, 'recordReturn'])->middleware('can:record-payments');
+        Route::get('', [DepositController::class, 'getSummary'])->middleware(['can:view-payments', 'can:view,lease']);
+        Route::post('record-paid', [DepositController::class, 'recordPaid'])->middleware(['can:record-payments', 'can:update,lease']);
+        Route::post('record-return', [DepositController::class, 'recordReturn'])->middleware(['can:record-payments', 'can:update,lease']);
+    });
+
+    // Rental application review
+    Route::prefix('applications')->middleware('throttle:userManagement')->group(function () {
+        Route::get('', [ApplicationController::class, 'getApplications'])->middleware('can:view-users');
+        Route::get('{application}', [ApplicationController::class, 'getApplication'])->middleware('can:view-users');
+        Route::post('{application}/approve', [ApplicationController::class, 'approve'])->middleware('can:create-leases');
+        Route::post('{application}/reject', [ApplicationController::class, 'reject'])->middleware('can:create-leases');
     });
 
     // Payment schedules
@@ -99,6 +112,7 @@ Route::middleware(['auth:api', 'company.scope'])->group(function () {
     });
 
     // Documents
+    Route::get('documents', [DocumentController::class, 'index'])->middleware('can:view-documents');
     Route::get('document/{document}/download', [DocumentController::class, 'download'])->middleware('can:view-documents');
 
 

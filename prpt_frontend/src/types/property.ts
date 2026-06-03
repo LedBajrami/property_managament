@@ -9,12 +9,14 @@ export interface Property {
     property_type: string;
     year_built?: number;
     parking_spaces: number;
-    amenities?: any;
+    amenities?: string[] | null;
     total_units?: number;
     occupied_units?: number;
     available_units?: number;
     maintenance_units?: number;
     occupancy_rate?: number;
+    thumbnail?: File;
+    thumbnail_url?: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -28,7 +30,8 @@ export interface CreatePropertyParams {
     description?: string;
     year_built?: number;
     parking_spaces?: number;
-    amenities?: string[] | any;
+    amenities?: string[];
+    thumbnail?: File;
 }
 
 export interface UpdatePropertyParams {
@@ -41,7 +44,8 @@ export interface UpdatePropertyParams {
     description?: string;
     year_built?: number;
     parking_spaces?: number;
-    amenities?: string[] | any;
+    amenities?: string[];
+    thumbnail?: File;
 }
 
 export interface CreatePropertyResponse {

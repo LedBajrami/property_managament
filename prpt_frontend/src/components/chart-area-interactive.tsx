@@ -29,6 +29,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
+import { DashboardChartPoint } from "@/types/dashboard"
 
 export const description = "An interactive area chart"
 
@@ -131,16 +132,16 @@ const chartConfig = {
     label: "Visitors",
   },
   desktop: {
-    label: "Desktop",
+    label: "Billed",
     color: "var(--primary)",
   },
   mobile: {
-    label: "Mobile",
+    label: "Collected",
     color: "var(--primary)",
   },
 } satisfies ChartConfig
 
-export function ChartAreaInteractive() {
+export function ChartAreaInteractive({ data = chartData }: { data?: DashboardChartPoint[] }) {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
 
@@ -150,9 +151,12 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile])
 
-  const filteredData = chartData.filter((item) => {
+  const referenceDate = data.length
+    ? new Date(data[data.length - 1].date)
+    : new Date()
+
+  const filteredData = data.filter((item) => {
     const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
     let daysToSubtract = 90
     if (timeRange === "30d") {
       daysToSubtract = 30
@@ -167,12 +171,12 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>Rent Performance</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
+            Billed and collected rent for the selected period
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden">Rent performance</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
